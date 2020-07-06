@@ -1,0 +1,22 @@
+{
+  "name": "goals-api",
+  "version": "0.0.1",
+  "description": "",
+  "main": "server.js",
+  "author": "Tey García <tgarciamiranda@gmail.com>",
+  "license": "",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "lint": "eslint ./",
+    "lint:fix": "eslint ./ --fix"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "eslint": "^7.4.0",
+    "nodemon": "^2.0.4"
+  }
+}

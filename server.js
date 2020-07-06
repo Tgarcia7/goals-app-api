@@ -1,12 +1,15 @@
 'use strict'
+const express = require('express')
+const app = express()
+const bodyParser = require('body-parser')
+const router = require('./router')
+const config = require('./config')
+require('./model/db')
 
-let express = require('express')
-let app = express()
+app.use(bodyParser.urlencoded( { extended: false } ))
+app.use(bodyParser.json())
+app.use('/', router)
 
-app.get('/', function (req, res) {
-  res.send('Goals Api')
-})
-
-app.listen(3000, function () {
-  console.log('server listening on port 3000')
+app.listen(config.port, () => {
+  console.log(`Goals api listening on port ${config.port}`)
 })

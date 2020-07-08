@@ -1,9 +1,9 @@
 const mongoose = require('mongoose')
 const config = require('../config')
 
-mongoose.connect(config.db_uri, { useCreateIndex: true, useUnifiedTopology: true, useNewUrlParser: true })
+mongoose.connect(config.DB_URI, { useCreateIndex: true, useUnifiedTopology: true, useNewUrlParser: true })
   
-mongoose.connection.on('error',function (err) { 
+mongoose.connection.on('error', err => { 
   console.error(`DB connection error: ${err}`)
   process.exit(0)
 }) 

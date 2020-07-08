@@ -1,5 +1,5 @@
 'use strict'
-const User = require('../model/user')
+const User = require('../models/user')
 
 function getAll(req, res) {
   User.find({}, (err, users) => {

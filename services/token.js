@@ -10,13 +10,13 @@ function createToken(user) {
     exp: moment().add(14, 'days').unix()
   }
 
-  return jwt.encode(payload, config.SECRET_TOKEN)
+  return jwt.sign(payload, config.SECRET_TOKEN)
 }
 
 function decodeToken(token) {
   const decoded = new Promise((resolve, reject) => {
     try {
-      const payload = jwt.decode(token, config.SECRET_TOKEN)
+      const payload = jwt.verify(token, config.SECRET_TOKEN)
 
       if (payload.exp <= moment().unix()) {
         reject({

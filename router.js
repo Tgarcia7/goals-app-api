@@ -1,6 +1,7 @@
 'use strict'
 const express = require('express')
 const userController = require('./controllers/user')
+const goalController = require('./controllers/goal')
 //const auth = require('./middlewares/auth')
 const router = express.Router()
 
@@ -11,6 +12,8 @@ router.post('/signup', userController.signUp)
 router.post('/signin', userController.signIn)
 router.delete('/users/:id', userController.deleteOne)
 router.delete('/users/', userController.deleteAll)
+
+router.post('/goals', goalController.add)
 
 //router.get('/users', auth, userController.getAll)
 

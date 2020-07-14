@@ -8,7 +8,7 @@ const GoalSchema = new Schema({
   objectiveDone: Number,
   objectiveTotal: Number,
   type: { type: String, enum: ['objective', 'simple', 'steps'], required: true },
-  status: { type: Number, defaul: 1 },
+  status: { type: Number, default: 1 },
   progress: { type: String, enum: ['doing', 'done'], default: 'doing' },
   stepsList: { type: Array, default: [] },
   dateCompleted: { type: Date },

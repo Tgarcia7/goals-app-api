@@ -20,6 +20,76 @@ async function add (req, res) {
   }
 }
 
+async function findAll (req, res) {
+  try {
+    let filter = { status: 1, userId: ObjectId(req.user) }
+
+    let goals = await Goal.find(filter)
+    if (!Object.keys(goals).length) return res.status(404).send({ message: 'Not found' })
+    res.status(200).send(goals)
+
+  } catch (error) {
+    res.status(500).send({ message: 'Server error', error })
+  }
+}
+
+async function findById (req, res) {
+  try {
+    let filter = { status: 1 }
+
+    let goal = await Goal.find(filter)
+    if (!Object.keys(goal).length) return res.status(404).send({ message: 'Not found' })
+    res.status(200).send(goal)
+
+  } catch (error) {
+    res.status(500).send({ message: 'Server error', error })
+  }
+}
+
+async function update (req, res) {
+  try {
+    if ( (req.body && !Object.keys(req.body).length) || 
+      (req.params && !req.params.id) ) return res.status(400).send({ message: 'Missing params' })
+
+    let filter = { '_id': ObjectId(req.params.id) }
+
+    let result = await Goal.updateOne(filter, req.body)
+    res.status(200).send({ message: 'Update completed', updatedRows: result.nModified })
+
+  } catch (error) {
+    res.status(500).send({ message: 'Server error', error })
+  }
+}
+
+async function deleteOne (req, res) {
+  try {
+    if ( req.params && !req.params.id ) return res.status(400).send({ message: 'Missing params' })
+
+    let filter = { '_id': ObjectId(req.params.id) }
+
+    let result = await Goal.deleteOne(filter)
+    res.status(200).send({ message: 'Delete completed', deletedRows: result.deletedCount })
+
+  } catch (error) {
+    res.status(500).send({ message: 'Server error', error })
+  }
+}
+
+async function deleteAll (req, res) {
+  try {
+    let result = await Goal.deleteMany({})
+    res.status(200).send({ message: 'Delete completed', deletedRows: result.deletedCount })
+
+  } catch (error) {
+    res.status(500).send({ message: 'Server error', error })
+  }
+}
+
 module.exports = {
-  add
+  add,
+  findAll,
+  findById,
+  update,
+  deleteOne,
+  deleteAll
 }

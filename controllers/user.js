@@ -8,7 +8,7 @@ async function findAll (req, res) {
     let filter = { status: 1 }
 
     let users = await User.find(filter)
-    if (!users.length) return res.status(404).send({ message: 'Not found' })
+    if (!Object.keys(users).length) return res.status(404).send({ message: 'Not found' })
     res.status(200).send(users)
 
   } catch (error) {
@@ -93,7 +93,7 @@ async function signIn (req, res) {
     let filter = { email: req.body.email, password: req.body.password }
 
     let user = await User.find(filter)
-    if (user && user.length === 0) return res.status(404).send({ message: 'Unauthorized' })
+    if (!Object.keys(user).length) return res.status(404).send({ message: 'Unauthorized' })
     
     res.status(200).send({
       message: 'User authenticated', 

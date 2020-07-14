@@ -2,7 +2,7 @@
 const express = require('express')
 const userController = require('./controllers/user')
 const goalController = require('./controllers/goal')
-//const auth = require('./middlewares/auth')
+const auth = require('./middlewares/auth')
 const router = express.Router()
 
 router.get('/users', userController.findAll)
@@ -14,7 +14,10 @@ router.delete('/users/:id', userController.deleteOne)
 router.delete('/users/', userController.deleteAll)
 
 router.post('/goals', goalController.add)
-
-//router.get('/users', auth, userController.getAll)
+router.get('/goals', auth, goalController.findAll)
+router.get('/goals/:id', goalController.findById)
+router.post('/goals/:id', goalController.update)
+router.delete('/goals/:id', goalController.deleteOne)
+router.delete('/goals/', goalController.deleteAll)
 
 module.exports = router

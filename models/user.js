@@ -14,7 +14,8 @@ const UserSchema = new Schema({
   lang: { type: String, enum: ['es', 'en'], default: 'es' },
   jwt: String,
   goals: [{ type: Schema.Types.ObjectId, ref: 'Goal' }],
-  statistics: [{ type: Schema.Types.ObjectId, ref: 'Statistic' }]
+  statistics: [{ type: Schema.Types.ObjectId, ref: 'Statistic' }],
+  graphs: [{ type: Schema.Types.ObjectId, ref: 'Graph' }]
 })
 
 module.exports = mongoose.model('User', UserSchema, 'user')

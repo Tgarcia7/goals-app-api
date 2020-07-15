@@ -22,7 +22,7 @@ async function findById (req, res) {
 
     let filter = { '_id': ObjectId(req.params.id) }
   
-    let user = await User.find(filter).populate('goals')
+    let user = await User.find(filter).populate('goals').populate('statistics').populate('graphs')
     if (!user) return res.status(404).send({ message: 'Not found' })
     res.status(200).send(user) 
   } catch (error) {
@@ -116,6 +116,28 @@ function pushGoal (userId, goalId) {
   })
 }
 
+function pushStatistic (userId, statisticId) {
+  return new Promise (async (resolve, reject) => {
+    try {
+      await User.updateOne({ '_id': userId }, { $addToSet: { 'statistics': statisticId } })
+      resolve()
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
+
+function pushGraph (userId, graphId) {
+  return new Promise (async (resolve, reject) => {
+    try {
+      await User.updateOne({ '_id': userId }, { $addToSet: { 'graphs': graphId } })
+      resolve()
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
+
 module.exports = {
   findAll,
   findById,
@@ -124,5 +146,7 @@ module.exports = {
   update,
   deleteOne, 
   deleteAll,
-  pushGoal
+  pushGoal,
+  pushStatistic,
+  pushGraph
 }

@@ -23,8 +23,18 @@ router.put('/goals/:id', goalController.update)
 router.delete('/goals/:id', goalController.deleteOne)
 router.delete('/goals/', goalController.deleteAll)
 
-router.post('/statistics', statisticController.add)
-
 router.post('/graphs', graphController.add)
+router.get('/graphs', auth, graphController.findAll)
+router.get('/graphs/:id', graphController.findById)
+router.put('/graphs/:id', graphController.update)
+router.delete('/graphs/:id', graphController.deleteOne)
+router.delete('/graphs/', graphController.deleteAll)
+
+router.post('/statistics', statisticController.add)
+router.get('/statistics', auth, statisticController.findAll)
+router.get('/statistics/:id', statisticController.findById)
+router.put('/statistics/:id', statisticController.update)
+router.delete('/statistics/:id', statisticController.deleteOne)
+router.delete('/statistics/', statisticController.deleteAll)
 
 module.exports = router

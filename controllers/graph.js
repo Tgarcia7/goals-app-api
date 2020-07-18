@@ -1,23 +1,21 @@
 'use strict'
 const Graph = require('../models/graph')
-const { pushGraph } = require('./user')
+const { pushGraph, pullGraph } = require('./user')
 const ObjectId = require('mongodb').ObjectID
+const utils = require('../utils/index')
 
 async function add (req, res) {
+  if (req.body.chartdata && !utils.JSONStringValidate(req.body.chartdata)) 
+    return res.status(400).send({ message: 'Bad request' })
+    
   try {
+
     const graph = new Graph({
-      title: 'Metas en proceso',
-      type: 'Bar',
-      year: null,
-      chartdata: {
-        labels: ['A tiempo', 'Vencidas'],
-        datasets: [{
-          data: [17,13,0],
-          backgroundColor: ['rgba(6,160,6,0.2)', 'rgba(215,219,216,0.2)'],
-          borderColor: ['rgba(6,160,6,1)', 'rgba(215,219,216,1)']
-        }]
-      },
-      userId: ObjectId('5f0bdd4f9b8245ff79e30067')
+      title: req.body.title,
+      type: req.body.type,
+      year: req.body.year,
+      chartdata: JSON.parse(req.body.chartdata),
+      userId: ObjectId(req.body.userId)
     })
 
     let newGraph = await graph.save()
@@ -79,16 +77,8 @@ async function deleteOne (req, res) {
 
     let filter = { '_id': ObjectId(req.params.id) }
 
+    await pullGraph(req.params.id) 
     let result = await Graph.deleteOne(filter)
-    res.status(200).send({ message: 'Delete completed', deletedRows: result.deletedCount })
-  } catch (error) {
-    res.status(500).send({ message: 'Server error', error })
-  }
-}
-
-async function deleteAll (req, res) {
-  try {
-    let result = await Graph.deleteMany({})
 
     res.status(200).send({ message: 'Delete completed', deletedRows: result.deletedCount })
   } catch (error) {
@@ -101,6 +91,5 @@ module.exports = {
   findAll,
   findById,
   update,
-  deleteOne,
-  deleteAll
+  deleteOne
 }

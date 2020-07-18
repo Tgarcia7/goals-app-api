@@ -1,18 +1,18 @@
 'use strict'
 const Statistic = require('../models/statistic')
-const { pushStatistic } = require('./user')
+const { pushStatistic, pullStatistic } = require('./user')
 const ObjectId = require('mongodb').ObjectID
 
 async function add (req, res) {
   try {
     const statistic = new Statistic({
-      name: 'completedOnTime',
-      total: '90',
-      sign: '%',
-      icon: [ 'fas', 'trophy'] ,
-      color: '#b39700',
-      description: 'completadas a tiempo',
-      userId: ObjectId('5f0bdd4f9b8245ff79e30067')
+      name: req.body.name,
+      total: req.body.total,
+      sign: req.body.sign,
+      icon: req.body.icon,
+      color: req.body.color,
+      description: req.body.description,
+      userId: req.body.userId
     })
 
     let newStatistic = await statistic.save()
@@ -71,17 +71,9 @@ async function deleteOne (req, res) {
     if ( req.params && !req.params.id ) return res.status(400).send({ message: 'Missing params' })
 
     let filter = { '_id': ObjectId(req.params.id) }
-    let result = await Statistic.deleteOne(filter)
-    
-    res.status(200).send({ message: 'Delete completed', deletedRows: result.deletedCount })
-  } catch (error) {
-    res.status(500).send({ message: 'Server error', error })
-  }
-}
 
-async function deleteAll (req, res) {
-  try {
-    let result = await Statistic.deleteMany({})
+    await pullStatistic(req.params.id) 
+    let result = await Statistic.deleteOne(filter)
 
     res.status(200).send({ message: 'Delete completed', deletedRows: result.deletedCount })
   } catch (error) {
@@ -94,6 +86,5 @@ module.exports = {
   findAll,
   findById,
   update,
-  deleteOne,
-  deleteAll
+  deleteOne
 }

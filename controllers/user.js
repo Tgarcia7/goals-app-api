@@ -9,8 +9,8 @@ async function findAll (req, res) {
 
     let users = await User.find(filter)
     if (!Object.keys(users).length) return res.status(404).send({ message: 'Not found' })
+    
     res.status(200).send(users)
-
   } catch (error) {
     res.status(500).send({ message: 'Server error', error })
   }
@@ -38,8 +38,8 @@ async function update (req, res) {
     let filter = { '_id': ObjectId(req.params.id) }
 
     let result = await User.updateOne(filter, req.body)
-    res.status(200).send({ message: 'Update completed', updatedRows: result.nModified })
 
+    res.status(200).send({ message: 'Update completed', updatedRows: result.nModified })
   } catch (error) {
     res.status(500).send({ message: 'Server error', error })
   }
@@ -52,18 +52,8 @@ async function deleteOne (req, res) {
     let filter = { '_id': ObjectId(req.params.id) }
 
     let result = await User.deleteOne(filter)
+
     res.status(200).send({ message: 'Delete completed', deletedRows: result.deletedCount })
-
-  } catch (error) {
-    res.status(500).send({ message: 'Server error', error })
-  }
-}
-
-async function deleteAll (req, res) {
-  try {
-    let result = await User.deleteMany({})
-    res.status(200).send({ message: 'Delete completed', deletedRows: result.deletedCount })
-
   } catch (error) {
     res.status(500).send({ message: 'Server error', error })
   }
@@ -79,8 +69,8 @@ async function signUp (req, res) {
     })
   
     user.jwt = tokenService.createToken(user)
-
     await user.save()
+
     res.status(201).send({ token: user.jwt })
   } catch (error) {
     let errorMsg = error && error.code === 11000 ? 'Email duplicated' : 'Error creating the user: '
@@ -93,13 +83,12 @@ async function signIn (req, res) {
     let filter = { email: req.body.email, password: req.body.password }
 
     let user = await User.find(filter)
-    if (!Object.keys(user).length) return res.status(404).send({ message: 'Unauthorized' })
+    if (!Object.keys(user).length) return res.status(401).send({ message: 'Unauthorized' })
     
     res.status(200).send({
       message: 'User authenticated', 
       token: tokenService.createToken(user)
     })
-
   } catch (error) {
     res.status(500).send({ message: 'Server error', error })
   }
@@ -138,6 +127,39 @@ function pushGraph (userId, graphId) {
   })
 }
 
+function pullGraph (graphId) {
+  return new Promise (async (resolve, reject) => {
+    try {
+      await User.update({ 'graphs': ObjectId(graphId) }, { $pull: { 'graphs': graphId } })
+      resolve()
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
+
+function pullStatistic (statisticId) {
+  return new Promise (async (resolve, reject) => {
+    try {
+      await User.update({ 'statistics': ObjectId(statisticId) }, { $pull: { 'statistics': statisticId } })
+      resolve()
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
+
+function pullGoal (goalId) {
+  return new Promise (async (resolve, reject) => {
+    try {
+      await User.update({ 'goals': ObjectId(goalId) }, { $pull: { 'goals': goalId } })
+      resolve()
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
+
 module.exports = {
   findAll,
   findById,
@@ -145,8 +167,10 @@ module.exports = {
   signIn,
   update,
   deleteOne, 
-  deleteAll,
   pushGoal,
   pushStatistic,
-  pushGraph
+  pushGraph,
+  pullGraph,
+  pullStatistic,
+  pullGoal
 }

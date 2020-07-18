@@ -1,6 +1,6 @@
 'use strict'
 const Goal = require('../models/goal')
-const { pushGoal } = require('./user')
+const { pushGoal, pullGoal } = require('./user')
 const ObjectId = require('mongodb').ObjectID
 
 async function add (req, res) {
@@ -70,17 +70,9 @@ async function deleteOne (req, res) {
 
     let filter = { '_id': ObjectId(req.params.id) }
 
+    await pullGoal(req.params.id) 
     let result = await Goal.deleteOne(filter)
 
-    res.status(200).send({ message: 'Delete completed', deletedRows: result.deletedCount })
-  } catch (error) {
-    res.status(500).send({ message: 'Server error', error })
-  }
-}
-
-async function deleteAll (req, res) {
-  try {
-    let result = await Goal.deleteMany({})
     res.status(200).send({ message: 'Delete completed', deletedRows: result.deletedCount })
   } catch (error) {
     res.status(500).send({ message: 'Server error', error })
@@ -92,6 +84,5 @@ module.exports = {
   findAll,
   findById,
   update,
-  deleteOne,
-  deleteAll
+  deleteOne
 }

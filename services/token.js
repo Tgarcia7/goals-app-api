@@ -5,7 +5,11 @@ const config = require('../config')
 
 function createToken(user) {
   const payload = {
-    sub: user._id,
+    sub: { 
+      userId: user._id, 
+      name: user.name, 
+      email: user.email 
+    },
     iat: moment().unix(),
     exp: moment().add(14, 'days').unix()
   }
@@ -18,18 +22,11 @@ function decodeToken(token) {
     try {
       const payload = jwt.verify(token, config.SECRET_TOKEN)
 
-      if (payload.exp <= moment().unix()) {
-        reject({
-          status: 401,
-          message: 'Token expired'
-        })
-      }
       resolve(payload.sub)
     } catch (err) {
-      reject({
-        status: 500,
-        message: 'Invalid token'
-      })
+      let errorCode = err.name === 'TokenExpiredError' ? 401 : 500
+
+      reject({ status: errorCode, message: err.name })
     }
   })
 

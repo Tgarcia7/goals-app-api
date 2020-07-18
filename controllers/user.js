@@ -2,7 +2,6 @@
 const User = require('../models/user')
 const tokenService = require('../services/token')
 const ObjectId = require('mongodb').ObjectID
-
 async function findAll (req, res) {
   try {
     let filter = { status: 1 }
@@ -64,32 +63,35 @@ async function signUp (req, res) {
     const user = new User({
       name: req.body.name,
       email: req.body.email,
-      password: 'abdcfasdlkfjñ',
-      jwt: ''
+      password: req.body.password
     })
   
-    user.jwt = tokenService.createToken(user)
     await user.save()
+    let jwt = tokenService.createToken(user)
 
-    res.status(201).send({ token: user.jwt })
+    res.status(201).send({ token: jwt })
   } catch (error) {
-    let errorMsg = error && error.code === 11000 ? 'Email duplicated' : 'Error creating the user: '
-    res.status(500).send({ message: errorMsg, error })
+    let errorMsg = error && error.code === 11000 ? 'Email duplicated' : `Error creating the user. ${error}`
+    res.status(500).send({ message: errorMsg })
   }
 }
 
 async function signIn (req, res) {
-  try {
-    let filter = { email: req.body.email, password: req.body.password }
+  if ( req.body && (!req.body.password || !req.body.email) ) 
+    return res.status(400).send({ message: 'Missing params' })
 
-    let user = await User.find(filter)
+  try {
+    let filter = { email: req.body.email }
+
+    let user = await User.findOne(filter)
     if (!Object.keys(user).length) return res.status(401).send({ message: 'Unauthorized' })
     
-    res.status(200).send({
-      message: 'User authenticated', 
-      token: tokenService.createToken(user)
-    })
+    let found = await user.comparePassword(req.body.password)
+    if (!found) return res.status(401).send({ message: 'Unauthorized' })
+    
+    res.status(200).send({ message: 'Authenticated', token: tokenService.createToken(user) })
   } catch (error) {
+    console.log(error)
     res.status(500).send({ message: 'Server error', error })
   }
 }

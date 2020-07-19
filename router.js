@@ -14,6 +14,8 @@ router.put('/users/:id', auth, userController.update)
 router.post('/signup', auth, userController.signUp)
 router.post('/signin', auth, userController.signIn)
 router.delete('/users/:id', auth, userController.deleteOne)
+router.post('/users/refresh-token', auth, userController.refreshToken)
+router.delete('/users/refresh-token/:id', auth, userController.deleteRefreshToken)
 
 router.post('/goals', auth, goalController.add)
 router.get('/goals', auth, goalController.findAll)

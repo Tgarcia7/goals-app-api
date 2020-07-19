@@ -1,8 +1,7 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 const Schema = mongoose.Schema
-
-const saltRounds = 8
+const SALT_ROUNDS = 8
 
 const UserSchema = new Schema({
   name: { type: String, required: true },
@@ -15,6 +14,7 @@ const UserSchema = new Schema({
   github: String,
   google: String,
   lang: { type: String, enum: ['es', 'en'], default: 'es' },
+  admin: { type: Number, enum: [1, 0], default: 0, select: false },
   goals: [{ type: Schema.Types.ObjectId, ref: 'Goal' }],
   statistics: [{ type: Schema.Types.ObjectId, ref: 'Statistic' }],
   graphs: [{ type: Schema.Types.ObjectId, ref: 'Graph' }]
@@ -25,7 +25,7 @@ UserSchema.pre('save', function (next) {
 
   if (!user.isModified('password')) return next()
 
-  bcrypt.hash(user.password, saltRounds, function (err, hash) {
+  bcrypt.hash(user.password, SALT_ROUNDS, function (err, hash) {
     if (err) return next(err)
 
     user.password = hash
@@ -35,12 +35,12 @@ UserSchema.pre('save', function (next) {
 
 UserSchema.methods.comparePassword = function(candidatePassword) {
   let user = this
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
     bcrypt.compare(candidatePassword, user.password)
-      .then(function (result) {
+      .then(result => {
         resolve(result)
       })
-      .catch(function (error) {
+      .catch(error => {
         reject(error)
       })
   })

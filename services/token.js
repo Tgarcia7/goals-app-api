@@ -4,14 +4,17 @@ const moment = require('moment')
 const config = require('../config')
 
 function createToken(user) {
+  user.admin = !!user.admin 
+
   const payload = {
     sub: { 
       userId: user._id, 
       name: user.name, 
-      email: user.email 
+      email: user.email,
+      admin: user.admin 
     },
     iat: moment().unix(),
-    exp: moment().add(14, 'days').unix()
+    exp: moment().add(15, 'minutes').unix()
   }
 
   return jwt.sign(payload, config.SECRET_TOKEN)

@@ -5,7 +5,7 @@ const ObjectId = require('mongodb').ObjectID
 const utils = require('../utils/index')
 
 async function add (req, res) {
-  if (req.body.chartdata && !utils.JSONStringValidate(req.body.chartdata)) 
+  if (req.body.data && !utils.JSONStringValidate(req.body.data)) 
     return res.status(400).send({ message: 'Bad request' })
     
   try {
@@ -13,8 +13,9 @@ async function add (req, res) {
     const graph = new Graph({
       title: req.body.title,
       type: req.body.type,
-      year: req.body.year,
-      chartdata: JSON.parse(req.body.chartdata),
+      byYear: req.body.byYear,
+      labels: JSON.parse(req.body.labels),
+      data: JSON.parse(req.body.data),
       userId: ObjectId(req.body.userId)
     })
 

@@ -24,7 +24,9 @@ async function findById (req, res) {
 
     let filter = { '_id': ObjectId(req.params.id) }
   
-    let user = await User.find(filter).populate('goals').populate('statistics').populate('graphs')
+    //let user = await User.find(filter).populate('goals').populate('statistics').populate('graphs')
+    let user = await User.find(filter)
+
     if (!user) return res.status(404).send({ message: 'Not found' })
     res.status(200).send(user) 
   } catch (error) {

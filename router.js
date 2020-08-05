@@ -18,7 +18,7 @@ router.post('/users/refresh-token', auth, userController.refreshToken)
 router.delete('/users/refresh-token/:id', auth, userController.deleteRefreshToken)
 
 router.post('/goals', auth, goalController.add)
-router.get('/goals', auth, goalController.findAll)
+router.get('/goals', auth, goalController.findByUser)
 router.get('/goals/:id', auth, goalController.findById)
 router.put('/goals/:id', auth, goalController.update)
 router.delete('/goals/:id', auth, goalController.deleteOne)

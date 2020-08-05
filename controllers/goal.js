@@ -19,7 +19,7 @@ async function add (req, res) {
   }
 }
 
-async function findAll (req, res) {
+async function findByUser (req, res) {
   try {
     let filter = req.body && req.body.query ? JSON.parse(req.body.query) : {}
     filter.userId = ObjectId(req.user.userId)
@@ -80,7 +80,7 @@ async function deleteOne (req, res) {
 
 module.exports = {
   add,
-  findAll,
+  findByUser,
   findById,
   update,
   deleteOne

@@ -1,6 +1,5 @@
 'use strict'
 const Graph = require('../models/graph')
-const { pushGraph, pullGraph } = require('./user')
 const ObjectId = require('mongodb').ObjectID
 const utils = require('../utils/index')
 
@@ -20,7 +19,6 @@ async function add (req, res) {
     })
 
     let newGraph = await graph.save()
-    await pushGraph(graph.userId, newGraph._id) 
 
     res.status(201).send({ message: 'Graph added', graph: newGraph })
   } catch (error) {
@@ -78,7 +76,6 @@ async function deleteOne (req, res) {
 
     let filter = { '_id': ObjectId(req.params.id) }
 
-    await pullGraph(req.params.id) 
     let result = await Graph.deleteOne(filter)
 
     res.status(200).send({ message: 'Delete completed', deletedRows: result.deletedCount })
@@ -87,10 +84,63 @@ async function deleteOne (req, res) {
   }
 }
 
+function initialGraphs (userId) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const graph1 = new Graph({
+        title: 'Metas en proceso',
+        type: 'Bar',
+        byYear: false,
+        labels: [ 'A tiempo', 'Vencidas' ],
+        data: [0, 0, 0],
+        userId
+      })
+  
+      const graph2 = new Graph({  
+        title: 'Metas por tipo',
+        type: 'Doughnut',
+        byYear: false,
+        data: [0, 0, 0],
+        labels: [ 'Pasos', 'Simple', 'Objetivo' ],
+        userId
+      })
+  
+      const graph3 = new Graph({    
+        title: 'Metas completadas',  
+        type: 'Line',
+        byYear: true,
+        labels: [
+          'Ene','Feb','Mar','Abr','May','Jun',
+          'Jul','Ago','Sep','Oct','Nov','Dic'
+        ],
+        data: {},
+        userId
+      })
+
+      const currentYear = `${new Date().getFullYear()}`
+      graph3.data[currentYear] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      
+      let graphsPromises = [
+        graph1.save(),
+        graph2.save(),
+        graph3.save()
+      ]
+  
+      await Promise.all(graphsPromises)
+  
+      resolve() 
+    } catch (error) {
+      console.error(error)
+      reject()
+    }
+  })
+}
+
 module.exports = {
   add,
   findAll,
   findById,
   update,
-  deleteOne
+  deleteOne,
+  initialGraphs
 }

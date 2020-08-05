@@ -1,6 +1,5 @@
 'use strict'
 const Statistic = require('../models/statistic')
-const { pushStatistic, pullStatistic } = require('./user')
 const ObjectId = require('mongodb').ObjectID
 
 async function add (req, res) {
@@ -16,7 +15,6 @@ async function add (req, res) {
     })
 
     let newStatistic = await statistic.save()
-    await pushStatistic(statistic.userId, newStatistic._id) 
 
     res.status(201).send({ message: 'Statistic added', statistic: newStatistic })
   } catch (error) {
@@ -72,7 +70,6 @@ async function deleteOne (req, res) {
 
     let filter = { '_id': ObjectId(req.params.id) }
 
-    await pullStatistic(req.params.id) 
     let result = await Statistic.deleteOne(filter)
 
     res.status(200).send({ message: 'Delete completed', deletedRows: result.deletedCount })
@@ -81,10 +78,49 @@ async function deleteOne (req, res) {
   }
 }
 
+function initialStats (userId) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const stat1 = new Statistic({
+        name: 'completedOnTime',
+        total: 0,
+        sign: '%',
+        icon: [ 'fas', 'trophy'],
+        color: '#b39700',
+        description: 'completadas a tiempo',
+        userId
+      })
+  
+      const stat2 = new Statistic({
+        name: 'completedYear',
+        total: 0,
+        sign: '',
+        icon: [ 'fas', 'check' ],
+        color: '#06a106',
+        description: 'completadas este año',
+        userId
+      })
+  
+      let statsPromises = [
+        stat1.save(),
+        stat2.save()
+      ]
+  
+      await Promise.all(statsPromises)
+      
+      resolve()
+    } catch (error) {
+      console.error(error)
+      reject()
+    }
+  })
+}
+
 module.exports = {
   add,
   findAll,
   findById,
   update,
-  deleteOne
+  deleteOne,
+  initialStats
 }

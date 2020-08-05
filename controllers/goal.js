@@ -1,6 +1,5 @@
 'use strict'
 const Goal = require('../models/goal')
-const { pushGoal, pullGoal } = require('./user')
 const ObjectId = require('mongodb').ObjectID
 
 async function add (req, res) {
@@ -13,7 +12,6 @@ async function add (req, res) {
     })
 
     let newGoal = await goal.save()
-    await pushGoal(goal.userId, newGoal._id) 
 
     res.status(201).send({ message: 'Goal added', goal: newGoal })
   } catch (error) {
@@ -70,7 +68,6 @@ async function deleteOne (req, res) {
 
     let filter = { '_id': ObjectId(req.params.id) }
 
-    await pullGoal(req.params.id) 
     let result = await Goal.deleteOne(filter)
 
     res.status(200).send({ message: 'Delete completed', deletedRows: result.deletedCount })

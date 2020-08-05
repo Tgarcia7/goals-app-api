@@ -4,6 +4,8 @@ const RefreshToken = require('../models/refreshToken')
 const tokenService = require('../services/token')
 const ObjectId = require('mongodb').ObjectID
 const uuid = require('uuid')
+const { initialStats } = require('./statistic')
+const { initialGraphs } = require('./graph')
 
 async function findAll (req, res) {
   try {
@@ -75,6 +77,13 @@ async function signUp (req, res) {
     await user.save()
     let jwt = tokenService.createToken(user)
 
+    const statsPromises = [
+      initialStats(user._id), 
+      initialGraphs(user._id)
+    ]
+
+    await Promise.all(statsPromises)
+
     res.status(201).send({ token: jwt })
   } catch (error) {
     let errorMsg = error && error.code === 11000 ? 'Email duplicated' : `Error creating the user. ${error}`
@@ -103,72 +112,6 @@ async function signIn (req, res) {
     console.log(error)
     res.status(500).send({ message: 'Server error', error })
   }
-}
-
-function pushGoal (userId, goalId) {
-  return new Promise (async (resolve, reject) => {
-    try {
-      await User.updateOne({ '_id': userId }, { $addToSet: { 'goals': goalId } })
-      resolve()
-    } catch (error) {
-      reject(error)
-    }
-  })
-}
-
-function pushStatistic (userId, statisticId) {
-  return new Promise (async (resolve, reject) => {
-    try {
-      await User.updateOne({ '_id': userId }, { $addToSet: { 'statistics': statisticId } })
-      resolve()
-    } catch (error) {
-      reject(error)
-    }
-  })
-}
-
-function pushGraph (userId, graphId) {
-  return new Promise (async (resolve, reject) => {
-    try {
-      await User.updateOne({ '_id': userId }, { $addToSet: { 'graphs': graphId } })
-      resolve()
-    } catch (error) {
-      reject(error)
-    }
-  })
-}
-
-function pullGraph (graphId) {
-  return new Promise (async (resolve, reject) => {
-    try {
-      await User.update({ 'graphs': ObjectId(graphId) }, { $pull: { 'graphs': graphId } })
-      resolve()
-    } catch (error) {
-      reject(error)
-    }
-  })
-}
-
-function pullStatistic (statisticId) {
-  return new Promise (async (resolve, reject) => {
-    try {
-      await User.update({ 'statistics': ObjectId(statisticId) }, { $pull: { 'statistics': statisticId } })
-      resolve()
-    } catch (error) {
-      reject(error)
-    }
-  })
-}
-
-function pullGoal (goalId) {
-  return new Promise (async (resolve, reject) => {
-    try {
-      await User.update({ 'goals': ObjectId(goalId) }, { $pull: { 'goals': goalId } })
-      resolve()
-    } catch (error) {
-      reject(error)
-    }
-  })
 }
 
 async function refreshToken (req, res) {
@@ -234,12 +177,6 @@ module.exports = {
   signIn,
   update,
   deleteOne, 
-  pushGoal,
-  pushStatistic,
-  pushGraph,
-  pullGraph,
-  pullStatistic,
-  pullGoal,
   refreshToken,
   deleteRefreshToken
 }

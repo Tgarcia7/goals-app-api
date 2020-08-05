@@ -21,13 +21,15 @@ async function add (req, res) {
 
 async function findAll (req, res) {
   try {
-    let filter = { status: 1, userId: ObjectId(req.user) }
+    let filter = req.body && req.body.query ? JSON.parse(req.body.query) : {}
+    filter.userId = ObjectId(req.user.userId)
 
     let goals = await Goal.find(filter)
     if (!Object.keys(goals).length) return res.status(404).send({ message: 'Not found' })
 
     res.status(200).send(goals)
   } catch (error) {
+    console.error(error)
     res.status(500).send({ message: 'Server error', error })
   }
 }

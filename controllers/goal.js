@@ -21,10 +21,13 @@ async function add (req, res) {
 
 async function findByUser (req, res) {
   try {
-    let filter = req.body && req.body.query ? JSON.parse(req.body.query) : {}
+    const page = Number(req.body.page) || 0 
+    const results = Number(req.body.results) || 0
+    const filter = req.body.query ? JSON.parse(req.body.query) : {}
+
     filter.userId = ObjectId(req.user.userId)
 
-    let goals = await Goal.find(filter)
+    let goals = await Goal.find(filter).skip(page).limit(results)
     if (!Object.keys(goals).length) return res.status(404).send({ message: 'Not found' })
 
     res.status(200).send(goals)

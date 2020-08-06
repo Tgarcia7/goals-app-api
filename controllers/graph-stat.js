@@ -6,15 +6,15 @@ const ObjectId = require('mongodb').ObjectID
 async function findByUser (req, res) {
   try {
     const filter = { userId: ObjectId(req.user.userId) }
-
     const graphsStatsPromises = [
       Graph.find(filter),
       Statistic.find(filter)
     ]
-    const results = await Promise.all(graphsStatsPromises)
+
+    const promisesResults = await Promise.all(graphsStatsPromises)
     const graphsStats = {
-      graphs: results[0],
-      stats: results[1]
+      graphs: promisesResults[0],
+      stats: promisesResults[1]
     }
 
     res.status(200).send(graphsStats)

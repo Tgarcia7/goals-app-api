@@ -33,7 +33,7 @@ UserSchema.pre('save', async function (next) {
 UserSchema.pre('updateOne', async function (next) {
   let user = this._update
   
-  if (!user.password) return next()
+  if (user && !user.password) return next()
 
   try {
     user.password = await hashPassword(user.password)

@@ -14,66 +14,63 @@ async function add (req, res) {
       userId: req.body.userId
     })
 
-    let newStatistic = await statistic.save()
+    const newStatistic = await statistic.save()
 
     res.status(201).send({ message: 'Statistic added', statistic: newStatistic })
   } catch (error) {
+    console.error(error)
     return res.status(500).send({ message: 'Server error', error })
   }
 }
 
 async function findByUser (req, res) {
   try {
-    let filter = { userId: ObjectId(req.user) }
+    const filter = { userId: ObjectId(req.user) }
+    const statistic = await Statistic.find(filter)
 
-    let statistic = await Statistic.find(filter)
     if (!Object.keys(statistic).length) return res.status(404).send({ message: 'Not found' })
 
     res.status(200).send(statistic)
   } catch (error) {
+    console.error(error)
     res.status(500).send({ message: 'Server error', error })
   }
 }
 
 async function findById (req, res) {
   try {
-    if (req.params && !req.params.id) return res.status(400).send({ message: 'Missing params' })
+    const filter = { status: 1, '_id': ObjectId(req.params.id) }
+    const statistic = await Statistic.find(filter)
 
-    let filter = { status: 1, '_id': ObjectId(req.params.id) }
-
-    let statistic = await Statistic.find(filter)
     if (!Object.keys(statistic).length) return res.status(404).send({ message: 'Not found' })
 
     res.status(200).send(statistic)
   } catch (error) {
+    console.error(error)
     res.status(500).send({ message: 'Server error', error })
   }
 }
 
 async function update (req, res) {
   try {
-    if ( (req.body && !Object.keys(req.body).length) || 
-      (req.params && !req.params.id) ) return res.status(400).send({ message: 'Missing params' })
-
-    let filter = { '_id': ObjectId(req.params.id) }
-    let result = await Statistic.updateOne(filter, req.body)
+    const filter = { '_id': ObjectId(req.params.id) }
+    const result = await Statistic.updateOne(filter, req.body)
 
     res.status(200).send({ message: 'Update completed', updatedRows: result.nModified })
   } catch (error) {
+    console.error(error)
     res.status(500).send({ message: 'Server error', error })
   }
 }
 
 async function deleteOne (req, res) {
   try {
-    if ( req.params && !req.params.id ) return res.status(400).send({ message: 'Missing params' })
-
-    let filter = { '_id': ObjectId(req.params.id) }
-
-    let result = await Statistic.deleteOne(filter)
+    const filter = { '_id': ObjectId(req.params.id) }
+    const result = await Statistic.deleteOne(filter)
 
     res.status(200).send({ message: 'Delete completed', deletedRows: result.deletedCount })
   } catch (error) {
+    console.error(error)
     res.status(500).send({ message: 'Server error', error })
   }
 }
@@ -111,7 +108,7 @@ function initialStats (userId) {
       resolve()
     } catch (error) {
       console.error(error)
-      reject()
+      reject(error)
     }
   })
 }

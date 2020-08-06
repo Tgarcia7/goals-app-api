@@ -9,25 +9,22 @@ const { initialGraphs } = require('./graph')
 
 async function findAll (req, res) {
   try {
-    let filter = { status: 1 },
-      fields = { __v: 0, password: 0, signupDate: 0 }
-
-    let users = await User.find(filter, fields)
-    if (!Object.keys(users).length) return res.status(404).send({ message: 'Not found' })
+    const filter = { status: 1 }
+    const excludedFields = { __v: 0, password: 0, signupDate: 0 }
+    const users = await User.find(filter, excludedFields)
     
     res.status(200).send(users)
   } catch (error) {
+    console.error(error)
     res.status(500).send({ message: 'Server error', error })
   }
 }
 
 async function findById (req, res) {
   try {
-    if (req.params && !req.params.id) return res.status(400).send({ message: 'Missing params' })
-
-    let filter = { '_id': ObjectId(req.params.id) },
-      fields = { __v: 0, password: 0, signupDate: 0 },
-      user = await User.find(filter, fields)
+    const filter = { '_id': ObjectId(req.params.id) }
+    const excludedFields = { __v: 0, password: 0, signupDate: 0 }
+    const user = await User.find(filter, excludedFields)
 
     if (!user) return res.status(404).send({ message: 'Not found' })
     res.status(200).send(user) 
@@ -39,13 +36,10 @@ async function findById (req, res) {
 
 async function update (req, res) {
   try {
-    if ( (req.body && !Object.keys(req.body).length) || 
-      (req.params && !req.params.id) ) return res.status(400).send({ message: 'Missing params' })
-
     delete req.body['password']
-    let result = await User.updateOne({ _id: ObjectId(req.params.id) }, req.body)
+    const updateResult = await User.updateOne({ _id: ObjectId(req.params.id) }, req.body)
 
-    res.status(200).send({ message: 'Update completed', updatedRows: result.nModified })
+    res.status(200).send({ message: 'Update completed', updatedRows: updateResult.nModified })
   } catch (error) {
     console.error(error)
     res.status(500).send({ message: 'Server error', error })
@@ -54,13 +48,12 @@ async function update (req, res) {
 
 async function deleteOne (req, res) {
   try {
-    if ( req.params && !req.params.id ) return res.status(400).send({ message: 'Missing params' })
+    const filter = { '_id': ObjectId(req.params.id) } 
+    const deleteResult = await User.deleteOne(filter)
 
-    let filter = { '_id': ObjectId(req.params.id) }
-    let result = await User.deleteOne(filter)
-
-    res.status(200).send({ message: 'Delete completed', deletedRows: result.deletedCount })
+    res.status(200).send({ message: 'Delete completed', deletedRows: deleteResult.deletedCount })
   } catch (error) {
+    console.error(error)
     res.status(500).send({ message: 'Server error', error })
   }
 }
@@ -75,7 +68,7 @@ async function signUp (req, res) {
     })
   
     await user.save()
-    let jwt = tokenService.createToken(user)
+    const jwt = tokenService.createToken(user)
 
     const statsPromises = [
       initialStats(user._id), 
@@ -86,84 +79,85 @@ async function signUp (req, res) {
 
     res.status(201).send({ token: jwt })
   } catch (error) {
-    let errorMsg = error && error.code === 11000 ? 'Email duplicated' : `Error creating the user. ${error}`
+    console.error(error)
+    const errorMsg = error && error.code === 11000 ? 'Email duplicated' : `Error creating the user. ${error}`
     res.status(500).send({ message: errorMsg })
   }
 }
 
 async function signIn (req, res) {
-  if ( req.body && (!req.body.password || !req.body.email) ) 
-    return res.status(400).send({ message: 'Missing params' })
+  const { password, email } = req.body
+  if ( !password || !email ) return res.status(400).send({ message: 'Missing params' })
 
   try {
-    let filter = { email: req.body.email }
+    const filter = { email: email }
+    const user = await User.findOne(filter)
 
-    let user = await User.findOne(filter)
-    if (!user || !Object.keys(user).length) return res.status(401).send({ message: 'Unauthorized' })
+    if (!Object.keys(user).length) return res.status(401).send({ message: 'Unauthorized' })
     
-    let found = await user.comparePassword(req.body.password)
+    const found = await user.comparePassword(password)
     if (!found) return res.status(401).send({ message: 'Unauthorized' })
     
-    let refreshToken = await addRefreshToken(user),
-      token = tokenService.createToken(user)
+    const refreshToken = await addRefreshToken(user)
+    const token = tokenService.createToken(user)
 
     res.status(200).send({ message: 'Authenticated', token, refreshToken })
   } catch (error) {
-    console.log(error)
+    console.error(error)
     res.status(500).send({ message: 'Server error', error })
   }
 }
 
 async function changePassword (req, res) {
-  if ( req.body && (!req.body.password || !req.body.email || !req.body.newPassword) ) 
-    return res.status(400).send({ message: 'Missing params' })
+  const { password, email, newPassword } = req.body
+  if ( !password || !email || !newPassword ) return res.status(400).send({ message: 'Missing params' })
 
   try {
-    let filter = { email: req.body.email }
+    const filter = { email: email }
+    const user = await User.findOne(filter)
 
-    let user = await User.findOne(filter)
-    if (!user || !Object.keys(user).length) return res.status(401).send({ message: 'Unauthorized' })
+    if ( !Object.keys(user).length ) return res.status(401).send({ message: 'Unauthorized' })
     
-    let found = await user.comparePassword(req.body.password)
+    const found = await user.comparePassword(password)
     if (!found) return res.status(401).send({ message: 'Unauthorized' })
     
-    let result = await User.updateOne({ _id: ObjectId(req.params.id) }, { password: req.body.newPassword })
+    const updateResult = await User.updateOne({ _id: ObjectId(req.params.id) }, { password: newPassword })
 
-    res.status(200).send({ message: 'Update completed', updatedRows: result.nModified })
+    res.status(200).send({ message: 'Update completed', updatedRows: updateResult.nModified })
   } catch (error) {
-    console.log(error)
+    console.error(error)
     res.status(500).send({ message: 'Server error', error })
   }
 }
 
 async function refreshToken (req, res) {
-  if ( req.body && (!req.body.refreshToken || !req.body.email) ) 
-    return res.status(400).send({ message: 'Missing params' })
-
-  let filter = { token: req.body.refreshToken, 'user.email': req.body.email }
+  const { refreshToken, email } = req.body
+  if ( !refreshToken || !email ) return res.status(400).send({ message: 'Missing params' })
 
   try {
-    let result = await RefreshToken.findOne(filter)
+    const filter = { token: refreshToken, 'user.email': email }
+    const refreshToken = await RefreshToken.findOne(filter)
 
-    if (result) {
-      let token = tokenService.createToken(result.user)
+    if (refreshToken) {
+      const token = tokenService.createToken(refreshToken.user)
       res.status(200).send({ message: token })
     } else {
       res.status(401).send({ message: 'Unauthorized' })
     }
   } catch (error) {
+    console.error(error)
     res.status(500).send({ message: `Server error: ${error}` })
   }
 }
 
 async function addRefreshToken (user) {
-  let filter = { 'user.email': user.email }
-  let result = await RefreshToken.findOne(filter)
+  try {
+    const filter = { 'user.email': user.email }
+    const refreshToken = await RefreshToken.findOne(filter)
 
-  if (result) {
-    return result.token
-  } else {
-    const refreshTokenInst = new RefreshToken({
+    if (refreshToken) return refreshToken.token
+    
+    const newRefreshToken = new RefreshToken({
       token: uuid.v4(),
       user: { 
         name: user.name,
@@ -171,22 +165,25 @@ async function addRefreshToken (user) {
         password: user.password
       }
     })
-  
-    refreshTokenInst.save()
-    return refreshTokenInst.token
+
+    newRefreshToken.save()
+
+    return newRefreshToken.token  
+  } catch (error) {
+    return error
   }
 }
 
 async function deleteRefreshToken (req, res) {
   try {
-    if ( req.params && !req.params.id ) return res.status(400).send({ message: 'Missing params' })
     if ( !req.user.admin ) return res.status(401).send({ message: 'Unauthorized' }) 
 
-    let filter = { token: req.params.id }
-    let result = await RefreshToken.deleteOne(filter)
+    const filter = { token: req.params.id }
+    const deleteResult = await RefreshToken.deleteOne(filter)
 
-    res.status(200).send({ message: 'Delete completed', deletedRows: result.deletedCount })
+    res.status(200).send({ message: 'Delete completed', deletedRows: deleteResult.deletedCount })
   } catch (error) {
+    console.error(error)
     res.status(500).send({ message: 'Server error', error })
   }
 }

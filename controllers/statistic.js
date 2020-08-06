@@ -22,7 +22,7 @@ async function add (req, res) {
   }
 }
 
-async function findAll (req, res) {
+async function findByUser (req, res) {
   try {
     let filter = { userId: ObjectId(req.user) }
 
@@ -118,7 +118,7 @@ function initialStats (userId) {
 
 module.exports = {
   add,
-  findAll,
+  findByUser,
   findById,
   update,
   deleteOne,

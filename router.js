@@ -6,6 +6,7 @@ const userController = require('./controllers/user')
 const goalController = require('./controllers/goal')
 const statisticController = require('./controllers/statistic')
 const graphController = require('./controllers/graph')
+const graphStatController = require('./controllers/graph-stat')
 const auth = require('./middlewares/auth')
 
 router.get('/users', auth, userController.findAll)
@@ -24,15 +25,17 @@ router.put('/goals/:id', auth, goalController.update)
 router.delete('/goals/:id', auth, goalController.deleteOne)
 
 router.post('/graphs', auth, graphController.add)
-router.get('/graphs', auth, graphController.findAll)
+router.get('/graphs', auth, graphController.findByUser)
 router.get('/graphs/:id', auth, graphController.findById)
 router.put('/graphs/:id', auth, graphController.update)
 router.delete('/graphs/:id', auth, graphController.deleteOne)
 
 router.post('/statistics', auth, statisticController.add)
-router.get('/statistics', auth, statisticController.findAll)
+router.get('/statistics', auth, statisticController.findByUser)
 router.get('/statistics/:id', auth, statisticController.findById)
 router.put('/statistics/:id', auth, statisticController.update)
 router.delete('/statistics/:id', auth, statisticController.deleteOne)
+
+router.get('/graphs-stats', auth, graphStatController.findByUser)
 
 module.exports = router

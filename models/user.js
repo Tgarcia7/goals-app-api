@@ -5,32 +5,42 @@ const SALT_ROUNDS = 8
 
 const UserSchema = new Schema({
   name: { type: String, required: true },
-  avatar: String,
+  avatar: { type: String, default: null },
   email: { type: String, unique: true, required: true, lowercase: true },
   password: { type: String, required: true },
   signupDate: { type: Date, default: Date.now() },
   status: { type: Number, enum: [1, 0], default: 1, select: false },
-  facebook: String,
-  github: String,
-  google: String,
+  facebook: { type: String, default: null },
+  github: { type: String, default: null },
+  google: { type: String, default: null },
   lang: { type: String, enum: ['es', 'en'], default: 'es' },
-  admin: { type: Number, enum: [1, 0], default: 0, select: false },
-  goals: [{ type: Schema.Types.ObjectId, ref: 'Goal' }],
-  statistics: [{ type: Schema.Types.ObjectId, ref: 'Statistic' }],
-  graphs: [{ type: Schema.Types.ObjectId, ref: 'Graph' }]
+  admin: { type: Number, enum: [1, 0], default: 0 }
 })
 
-UserSchema.pre('save', function (next) {
+UserSchema.pre('save', async function (next) {
   let user = this
 
   if (!user.isModified('password')) return next()
 
-  bcrypt.hash(user.password, SALT_ROUNDS, function (err, hash) {
-    if (err) return next(err)
-
-    user.password = hash
+  try {
+    user.password = await hashPassword(user.password)
     next()
-  })
+  } catch (error) {
+    return error
+  }
+})
+
+UserSchema.pre('updateOne', async function (next) {
+  let user = this._update
+  
+  if (!user.password) return next()
+
+  try {
+    user.password = await hashPassword(user.password)
+    next()
+  } catch (error) {
+    return error
+  }
 })
 
 UserSchema.methods.comparePassword = function(candidatePassword) {
@@ -43,6 +53,16 @@ UserSchema.methods.comparePassword = function(candidatePassword) {
       .catch(error => {
         reject(error)
       })
+  })
+}
+
+function hashPassword (password) {
+  return new Promise((resolve, reject) => {
+    bcrypt.hash(password, SALT_ROUNDS, function (err, hash) {
+      if (err) return reject(err)
+  
+      resolve(hash)
+    })
   })
 }
 

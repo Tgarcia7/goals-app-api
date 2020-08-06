@@ -4,10 +4,10 @@ const Schema = mongoose.Schema
 const StatisticSchema = new Schema({
   name: { type: String, required: true },
   total: { type: Array, required: true },
-  sign: String,
+  sign: { type: String, default: null },
   icon: { type: Array, required: true },
-  color: String,
-  description: String,
+  color: { type: String, default: null },
+  description: { type: String, default: null },
   userId: { type: Schema.Types.ObjectId, ref: 'User', required: true }
 })
 

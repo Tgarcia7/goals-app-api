@@ -9,9 +9,10 @@ const { initialGraphs } = require('./graph')
 
 async function findAll (req, res) {
   try {
-    let filter = { status: 1 }
+    let filter = { status: 1 },
+      fields = { __v: 0, password: 0, signupDate: 0 }
 
-    let users = await User.find(filter)
+    let users = await User.find(filter, fields)
     if (!Object.keys(users).length) return res.status(404).send({ message: 'Not found' })
     
     res.status(200).send(users)
@@ -24,14 +25,14 @@ async function findById (req, res) {
   try {
     if (req.params && !req.params.id) return res.status(400).send({ message: 'Missing params' })
 
-    let filter = { '_id': ObjectId(req.params.id) }
-  
-    //let user = await User.find(filter).populate('goals').populate('statistics').populate('graphs')
-    let user = await User.find(filter)
+    let filter = { '_id': ObjectId(req.params.id) },
+      fields = { __v: 0, password: 0, signupDate: 0 },
+      user = await User.find(filter, fields)
 
     if (!user) return res.status(404).send({ message: 'Not found' })
     res.status(200).send(user) 
   } catch (error) {
+    console.error(error)
     res.status(500).send({ message: 'Server error', error }) 
   }
 }
@@ -41,12 +42,12 @@ async function update (req, res) {
     if ( (req.body && !Object.keys(req.body).length) || 
       (req.params && !req.params.id) ) return res.status(400).send({ message: 'Missing params' })
 
-    let filter = { '_id': ObjectId(req.params.id) }
-
-    let result = await User.updateOne(filter, req.body)
+    delete req.body['password']
+    let result = await User.updateOne({ _id: ObjectId(req.params.id) }, req.body)
 
     res.status(200).send({ message: 'Update completed', updatedRows: result.nModified })
   } catch (error) {
+    console.error(error)
     res.status(500).send({ message: 'Server error', error })
   }
 }
@@ -56,7 +57,6 @@ async function deleteOne (req, res) {
     if ( req.params && !req.params.id ) return res.status(400).send({ message: 'Missing params' })
 
     let filter = { '_id': ObjectId(req.params.id) }
-
     let result = await User.deleteOne(filter)
 
     res.status(200).send({ message: 'Delete completed', deletedRows: result.deletedCount })
@@ -114,6 +114,28 @@ async function signIn (req, res) {
   }
 }
 
+async function changePassword (req, res) {
+  if ( req.body && (!req.body.password || !req.body.email || !req.body.newPassword) ) 
+    return res.status(400).send({ message: 'Missing params' })
+
+  try {
+    let filter = { email: req.body.email }
+
+    let user = await User.findOne(filter)
+    if (!user || !Object.keys(user).length) return res.status(401).send({ message: 'Unauthorized' })
+    
+    let found = await user.comparePassword(req.body.password)
+    if (!found) return res.status(401).send({ message: 'Unauthorized' })
+    
+    let result = await User.updateOne({ _id: ObjectId(req.params.id) }, { password: req.body.newPassword })
+
+    res.status(200).send({ message: 'Update completed', updatedRows: result.nModified })
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({ message: 'Server error', error })
+  }
+}
+
 async function refreshToken (req, res) {
   if ( req.body && (!req.body.refreshToken || !req.body.email) ) 
     return res.status(400).send({ message: 'Missing params' })
@@ -161,7 +183,6 @@ async function deleteRefreshToken (req, res) {
     if ( !req.user.admin ) return res.status(401).send({ message: 'Unauthorized' }) 
 
     let filter = { token: req.params.id }
-
     let result = await RefreshToken.deleteOne(filter)
 
     res.status(200).send({ message: 'Delete completed', deletedRows: result.deletedCount })
@@ -178,5 +199,6 @@ module.exports = {
   update,
   deleteOne, 
   refreshToken,
-  deleteRefreshToken
+  deleteRefreshToken,
+  changePassword
 }

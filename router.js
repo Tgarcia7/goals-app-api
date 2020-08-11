@@ -10,7 +10,7 @@ const graphStatController = require('./controllers/graph-stat')
 const auth = require('./middlewares/auth')
 
 router.get('/test', (req, res) => {
-  res.status(200).send({ message: 'Goals api' })
+  res.status(200).send({ message: 'Goals RESTful api' })
 })
 
 router.get('/users', auth, userController.findAll)

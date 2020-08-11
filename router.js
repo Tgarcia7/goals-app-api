@@ -9,6 +9,10 @@ const graphController = require('./controllers/graph')
 const graphStatController = require('./controllers/graph-stat')
 const auth = require('./middlewares/auth')
 
+router.get('/test', (req, res) => {
+  res.status(200).send({ message: 'Goals api' })
+})
+
 router.get('/users', auth, userController.findAll)
 router.get('/users/:id', auth, userController.findById)
 router.put('/users/:id', auth, userController.update)

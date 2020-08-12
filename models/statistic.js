@@ -3,7 +3,7 @@ const Schema = mongoose.Schema
 
 const StatisticSchema = new Schema({
   name: { type: String, required: true },
-  total: { type: Array, required: true },
+  total: { type: Number, required: true },
   sign: { type: String, default: null },
   icon: { type: Array, required: true },
   color: { type: String, default: null },

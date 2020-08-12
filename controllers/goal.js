@@ -6,7 +6,7 @@ async function add (req, res) {
   try {
     const goal = new Goal({
       title: req.body.title,
-      icon: JSON.parse(req.body.icon),
+      icon: req.body.icon,
       type: req.body.type,
       userId: ObjectId(req.body.userId)
     })

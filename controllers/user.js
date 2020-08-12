@@ -27,7 +27,8 @@ async function findById (req, res) {
     const user = await User.find(filter, excludedFields)
 
     if (!user) return res.status(404).send({ message: 'Not found' })
-    res.status(200).send(user) 
+    
+    res.status(200).send(user[0].transform()) 
   } catch (error) {
     console.error(error)
     res.status(500).send({ message: 'Server error', error }) 

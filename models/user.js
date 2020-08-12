@@ -66,4 +66,13 @@ function hashPassword (password) {
   })
 }
 
+UserSchema.method('transform', function () {
+  let obj = this.toObject()
+
+  obj.id = obj._id
+  delete obj._id
+
+  return obj
+})
+
 module.exports = mongoose.model('User', UserSchema, 'user')

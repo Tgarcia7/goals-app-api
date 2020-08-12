@@ -8,6 +8,14 @@ async function add (req, res) {
       title: req.body.title,
       icon: req.body.icon,
       type: req.body.type,
+      date: req.body.date,
+      objectiveTotal: req.body.objectiveTotal,
+      objectiveDone: req.body.objectiveDone,
+      status: req.body.status,
+      progress: req.body.progress,
+      stepsList: req.body.stepsList,
+      dateCompleted: req.body.dateCompleted,
+      dateCreated: req.body.dateCreated,
       userId: ObjectId(req.body.userId)
     })
 

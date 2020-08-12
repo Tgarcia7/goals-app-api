@@ -30,9 +30,16 @@ async function findByUser (req, res) {
     filter.userId = ObjectId(req.user.userId)
 
     const goals = await Goal.find(filter).skip(page).limit(results).sort(sort)
-    if (!Object.keys(goals).length) return res.status(404).send({ message: 'Not found' })
 
-    res.status(200).send(goals)
+    let goalsTransformed = []
+    
+    if (!Object.keys(goals).length) return res.status(404).send({ message: 'Not found' })
+    
+    for (let i = 0; i < goals.length; i++) {
+      goalsTransformed.push(goals[i].transform())
+    }
+
+    res.status(200).send(goalsTransformed)
   } catch (error) {
     console.error(error)
     res.status(500).send({ message: 'Server error', error })

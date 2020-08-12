@@ -16,4 +16,13 @@ const GoalSchema = new Schema({
   userId: { type: Schema.Types.ObjectId, ref: 'User', required: true }
 })
 
+GoalSchema.method('transform', function () {
+  let obj = this.toObject()
+
+  obj.id = obj._id
+  delete obj._id
+
+  return obj
+})
+
 module.exports = mongoose.model('Goal', GoalSchema, 'goal')

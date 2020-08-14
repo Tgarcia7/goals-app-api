@@ -43,7 +43,11 @@ async function update (req, res) {
     res.status(200).send({ message: 'Update completed', updatedRows: updateResult.nModified })
   } catch (error) {
     console.error(error)
-    res.status(500).send({ message: 'Server error', error })
+    if (error && error.code === 11000) {
+      res.status(409).send({ message: 'Email duplicated' })
+    } else {
+      res.status(500).send({ message: `Error creating the user. ${error}` })
+    }
   }
 }
 
@@ -81,8 +85,11 @@ async function signUp (req, res) {
     res.status(201).send({ token: jwt })
   } catch (error) {
     console.error(error)
-    const errorMsg = error && error.code === 11000 ? 'Email duplicated' : `Error creating the user. ${error}`
-    res.status(500).send({ message: errorMsg })
+    if (error && error.code === 11000) {
+      res.status(409).send({ message: 'Email duplicated' })
+    } else {
+      res.status(500).send({ message: `Error creating the user. ${error}` })
+    }
   }
 }
 

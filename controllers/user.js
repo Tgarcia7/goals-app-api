@@ -94,7 +94,7 @@ async function signIn (req, res) {
     const filter = { email: email }
     const user = await User.findOne(filter)
 
-    if (!Object.keys(user).length) return res.status(401).send({ message: 'Unauthorized' })
+    if (!user) return res.status(401).send({ message: 'Unauthorized' })
     
     const found = await user.comparePassword(password)
     if (!found) return res.status(401).send({ message: 'Unauthorized' })

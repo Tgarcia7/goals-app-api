@@ -18,5 +18,5 @@ app.use((req, res) => {
 })
 
 app.listen(config.PORT, () => {
-  console.log(`Goals api listening on port ${config.PORT}`)
+  console.log(`Goals api-${config.NODE_ENV} listening on port ${config.PORT}`)
 })

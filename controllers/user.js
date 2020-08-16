@@ -144,10 +144,10 @@ async function refreshToken (req, res) {
 
   try {
     const filter = { token: refreshToken, 'user.email': email }
-    const refreshToken = await RefreshToken.findOne(filter)
+    const tokenFound = await RefreshToken.findOne(filter)
 
-    if (refreshToken) {
-      const token = tokenService.createToken(refreshToken.user)
+    if (tokenFound) {
+      const token = tokenService.createToken(tokenFound.user)
       res.status(200).send({ message: token })
     } else {
       res.status(401).send({ message: 'Unauthorized' })

@@ -168,9 +168,10 @@ async function addRefreshToken (user) {
     const newRefreshToken = new RefreshToken({
       token: uuid.v4(),
       user: { 
+        _id: user._id,
         name: user.name,
         email: user.email,
-        password: user.password
+        admin: user.admin
       }
     })
 

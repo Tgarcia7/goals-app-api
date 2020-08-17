@@ -150,7 +150,7 @@ async function refreshToken (req, res) {
       const token = tokenService.createToken(tokenFound.user)
       res.status(200).send({ message: token })
     } else {
-      res.status(401).send({ message: 'Unauthorized' })
+      res.status(400).send({ message: 'Bad request' })
     }
   } catch (error) {
     console.error(error)

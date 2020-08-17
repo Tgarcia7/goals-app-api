@@ -124,10 +124,10 @@ async function changePassword (req, res) {
     const filter = { email: email }
     const user = await User.findOne(filter)
 
-    if ( !Object.keys(user).length ) return res.status(401).send({ message: 'Unauthorized' })
+    if ( !Object.keys(user).length ) return res.status(400).send({ message: 'Bad request' })
     
     const found = await user.comparePassword(password)
-    if (!found) return res.status(401).send({ message: 'Unauthorized' })
+    if (!found) return res.status(400).send({ message: 'Bad request' })
     
     const updateResult = await User.updateOne({ _id: ObjectId(req.params.id) }, { password: newPassword })
 
@@ -150,7 +150,7 @@ async function refreshToken (req, res) {
       const token = tokenService.createToken(tokenFound.user)
       res.status(200).send({ message: token })
     } else {
-      res.status(400).send({ message: 'Bad request' })
+      res.status(401).send({ message: 'Unauthorized' })
     }
   } catch (error) {
     console.error(error)

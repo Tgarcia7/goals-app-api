@@ -1,22 +1,13 @@
 'use strict'
-const express = require('express')
-const app = express()
-const bodyParser = require('body-parser')
-const cors = require('cors')
-const router = require('./router')
+const http = require('http')
 const config = require('./config')
+const app = require('./app')
 require('./models/db')
 
-app.use(cors())
-app.use(bodyParser.urlencoded( { extended: false } ))
-app.use(bodyParser.json())
-
-app.use('/', router)
-// Handle 404
-app.use((req, res) => {
-  res.status(404).send({ message: 'Not found' })
-})
+const server = http.createServer(app)
 
 app.listen(config.PORT, () => {
   console.log(`Goals api-${config.NODE_ENV} listening on port ${config.PORT}`)
 })
+
+module.exports = server

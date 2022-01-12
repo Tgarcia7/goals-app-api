@@ -9,6 +9,14 @@ jobs:
       - run:
           name: Install Node dependencies
           command: npm install
+      - run: mkdir ./junit
       - run:
           name: Unit tests
-          command: npm run test
+          command: npm run test:junit-report
+          environment:
+            MOCHA_FILE: ./junit/test-results.xml
+          when: always
+      - store_test_results:
+          path: ./junit
+      - store_artifacts:
+          path: ./junit

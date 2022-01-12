@@ -27,6 +27,10 @@ module.exports = {
     'no-multiple-empty-lines': [
       'warn', { 'max': 1 }
     ],
-    'no-unused-vars': [2, { 'vars': 'all', 'args': 'after-used' }]
+    'no-unused-vars': [2, { 'vars': 'all', 'args': 'after-used' }],
+    'eol-last': [
+      'warn',
+      'always'
+    ],
   }
 }

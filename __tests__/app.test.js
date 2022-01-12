@@ -1,17 +1,22 @@
 'use strict'
+const expect = require('chai').expect
 const app = require('../app')
 const supertest = require('supertest')
 
-beforeAll(() => {
+before(() => {
   process.env.NODE_ENV = 'test'
 })
 
-test('Test healthcheck endpoint', async () => {
-  const res = await supertest(app).get('/test')
-  expect(res.status).toBe(200)
+describe('Healthcheck', function(){
+  it('Should return successful response', async () => {
+    const res = await supertest(app).get('/test')
+    expect(res.status).to.equal(200)
+  })
 })
 
-test('Test non-existing endpoint', async () => {
-  const res = await supertest(app).get('/non-existing')
-  expect(res.status).toBe(404)
+describe('Not found', function(){
+  it('Should return not found', async () => {
+    const res = await supertest(app).get('/non-existing')
+    expect(res.status).to.equal(404)
+  })
 })

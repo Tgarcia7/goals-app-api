@@ -25,7 +25,7 @@ jobs:
 workflows:
   build_and_test:
     jobs:
-      - 'Prepare Images'
+      - 'Create Images'
       - 'Test'
 
 executors:

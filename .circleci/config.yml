@@ -2,13 +2,13 @@ version: 2.1
 
 # Define the jobs we want to run for this project
 jobs:
-  'Create Images':
+  build:
     executor:
       name: ubuntu-machine
       docker_layer_caching: true
     steps:
       - run: docker-compose --file docker-compose.ci.yml up -d
-  'Test':
+  test:
     executor:
       name: ubuntu-machine
       docker_layer_caching: true
@@ -25,8 +25,10 @@ jobs:
 workflows:
   build_and_test:
     jobs:
-      - 'Create Images'
-      - 'Test'
+      - build
+      - test:
+          requires:
+            - build
 
 executors:
   ubuntu-machine:

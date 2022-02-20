@@ -18,8 +18,9 @@ jobs:
     steps:
       - checkout
       - run: mkdir ./junit
-      - run: bin/test
       - run: docker-compose --file docker-compose.ci.yml run --rm api bin/test
+          environment:
+              MOCHA_FILE: ./junit/test-results.xml
       - store_test_results:
           path: ./junit
       - store_artifacts:

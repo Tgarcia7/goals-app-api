@@ -3,16 +3,19 @@ version: 2.1
 # Define the jobs we want to run for this project
 jobs:
   build:
+    working_directory: ~/repo
     executor:
       name: ubuntu-machine
       docker_layer_caching: true
     steps:
-      - run: docker-compose --file docker-compose.ci.yml up -d
+      - checkout
+      - run: docker-compose --file docker-compose.ci.yml build
   test:
     executor:
       name: ubuntu-machine
       docker_layer_caching: true
     steps:
+      - checkout
       - run: mkdir ./junit
       - run: bin/test_setup
       - run: docker-compose --file docker-compose.ci.yml run --rm api bin/test

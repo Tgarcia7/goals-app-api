@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
 # Run script defined in package.json
-export MOCHA_FILE=./junit/test-results.xml
 npm run test:junit-report
+

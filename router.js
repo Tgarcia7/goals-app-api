@@ -16,7 +16,7 @@ router.get('/test', (req, res) => {
 router.get('/users', auth, userController.findAll)
 router.get('/users/:id', auth, userController.findById)
 router.put('/users/:id', auth, userController.update)
-router.post('/signup', auth, userController.signUp)
+router.post('/signup', userController.signUp)
 router.post('/signin', auth, userController.signIn)
 router.delete('/users/:id', auth, userController.deleteOne)
 router.post('/users/refresh-token', auth, userController.refreshToken)

@@ -11,14 +11,12 @@ jobs:
       - checkout
       - run: docker-compose --file docker-compose.ci.yml build
   test:
-    working_directory: ~/repo
     executor:
       name: ubuntu-machine
       docker_layer_caching: true
     steps:
       - checkout
       - run: mkdir ./junit
-      - run: docker-compose --file docker-compose.ci.yml build
       - run: docker-compose --file docker-compose.ci.yml run --rm api bin/test
       - store_test_results:
           path: ./junit

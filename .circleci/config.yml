@@ -18,7 +18,7 @@ jobs:
     steps:
       - checkout
       - run: mkdir ./junit
-      - run: bin/test_setup
+      - run: bin/test
       - run: docker-compose --file docker-compose.ci.yml run --rm api bin/test
       - store_test_results:
           path: ./junit

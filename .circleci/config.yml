@@ -4,7 +4,7 @@ jobs:
   build:
     working_directory: ~/repo
     docker:
-      - image: tgarciam/goals-api:latest
+      - image: docker:20.10.11-git
         auth:
           username: tgarciam
           password: $DOCKER_PASSWORD
@@ -12,10 +12,9 @@ jobs:
       - checkout
       - setup_remote_docker
       - run: docker-compose --file docker-compose.ci.yml build
-      - persist_to_workspace:
-          root: build/
-          paths:
-            - output
+      - run: docker build -t tgarciam/goals-api .
+      - run: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+      - run: docker push tgarciam/goals-api
 
   # lint:
   #   docker:

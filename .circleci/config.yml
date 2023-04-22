@@ -4,15 +4,13 @@ jobs:
   build:
     working_directory: ~/repo
     docker:
-      - image: tgarciam/goals-api
+      - image: tgarciam/goals-api:latest
+        auth:
+          username: tgarciam
+          password: $DOCKER_PASSWORD
     steps:
       - checkout
-      - setup_remote_docker
       - run: docker-compose --file docker-compose.ci.yml build
-      - run: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-      - run: docker build -t tgarciam/goals-api .
-      - run: docker push tgarciam/goals-api
-      - run: docker save tgarciam/goals-api > goals-api.tar
       - store_artifacts:
           path: goals-api.tar
           destination: goals-api.tar
@@ -25,8 +23,6 @@ jobs:
       - restore_cache:
           keys:
             - goals-api-{{ checksum "goals-api.tar" }}
-      - run: docker load < goals-api.tar
-      - checkout
       - run: docker-compose --file docker-compose.ci.yml run --rm api bin/lint
 
   test:

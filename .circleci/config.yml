@@ -7,24 +7,44 @@ jobs:
       - image: tgarciam/goals-api
     steps:
       - checkout
+      - setup_remote_docker
+      - run: docker-compose --file docker-compose.ci.yml build
       - run: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-      - run: docker-compose -f docker-compose.ci.yml build
+      - run: docker build -t tgarciam/goals-api .
       - run: docker push tgarciam/goals-api
+      - run: docker save tgarciam/goals-api > goals-api.tar
+      - store_artifacts:
+          path: goals-api.tar
+          destination: goals-api.tar
 
   lint:
     docker:
       - image: tgarciam/goals-api:latest
     steps:
       - checkout
-      - run: docker-compose -f docker-compose.ci.yml run --rm api bin/lint
+      - restore_cache:
+          keys:
+            - goals-api-{{ checksum "goals-api.tar" }}
+      - run: docker load < goals-api.tar
+      - checkout
+      - run: docker-compose --file docker-compose.ci.yml run --rm api bin/lint
 
   test:
     docker:
       - image: tgarciam/goals-api:latest
     steps:
       - checkout
-      - run: docker-compose -f docker-compose.ci.yml up -d mongo
-      - run: docker-compose -f docker-compose.ci.yml run --rm api bin/test
+      - restore_cache:
+          keys:
+            - goals-api-{{ checksum "goals-api.tar" }}
+      - run: docker load < goals-api.tar
+      # - run: mkdir ./junit
+      - run: docker-compose --file docker-compose.ci.yml up -d mongo
+      - run: docker-compose --file docker-compose.ci.yml run --rm api bin/test
+      # - store_test_results:
+      #     path: ./junit
+      # - store_artifacts:
+      #     path: ./junit
 
 workflows:
   build-and-test:

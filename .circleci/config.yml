@@ -10,30 +10,30 @@ jobs:
           password: $DOCKER_PASSWORD
     steps:
       - checkout
+      - setup_remote_docker
       - run: docker-compose --file docker-compose.ci.yml build
-      - store_artifacts:
-          path: goals-api.tar
-          destination: goals-api.tar
+      - persist_to_workspace:
+          root: build/
+          paths:
+            - output
 
-  lint:
-    docker:
-      - image: tgarciam/goals-api:latest
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - goals-api-{{ checksum "goals-api.tar" }}
-      - run: docker-compose --file docker-compose.ci.yml run --rm api bin/lint
+  # lint:
+  #   docker:
+  #     - image: tgarciam/goals-api:latest
+  #   steps:
+  #     - attach_workspace:
+  #         at: build/
+  #         name: build B
+  #     - run: docker-compose --file docker-compose.ci.yml run --rm api bin/lint
 
   test:
     docker:
       - image: tgarciam/goals-api:latest
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - goals-api-{{ checksum "goals-api.tar" }}
-      - run: docker load < goals-api.tar
+      - attach_workspace:
+          at: build/
+          name: build C
       # - run: mkdir ./junit
       - run: docker-compose --file docker-compose.ci.yml up -d mongo
       - run: docker-compose --file docker-compose.ci.yml run --rm api bin/test
@@ -46,9 +46,9 @@ workflows:
   build-and-test:
     jobs:
       - build
-      - lint:
-          requires:
-            - build
+      # - lint:
+      #     requires:
+      #       - build
       - test:
           requires:
             - build

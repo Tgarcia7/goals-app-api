@@ -10,6 +10,14 @@ jobs:
     steps:
       - checkout
       - run: docker-compose --file docker-compose.ci.yml build
+  lint:
+    executor:
+      name: ubuntu-machine
+      docker_layer_caching: true
+    steps:
+      - checkout
+      - run: npm run lint
+
   test:
     executor:
       name: ubuntu-machine
@@ -18,7 +26,6 @@ jobs:
       - checkout
       - run: mkdir ./junit
       - run: docker-compose --file docker-compose.ci.yml run --rm api bin/test
-      - run: docker-compose --file docker-compose.ci.yml run --rm api bin/test_report
       - store_test_results:
           path: ./junit
       - store_artifacts:

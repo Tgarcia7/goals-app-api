@@ -1,53 +1,60 @@
 version: 2.1
 
+# Define the jobs we want to run for this project
 jobs:
   build:
     working_directory: ~/repo
-    docker:
-      - image: docker:20.10.11-git
-        auth:
-          username: tgarciam
-          password: $DOCKER_PASSWORD
+    executor:
+      name: ubuntu-machine
+      docker_layer_caching: true
     steps:
       - checkout
-      - setup_remote_docker
       - run: docker-compose --file docker-compose.ci.yml build
-      - run: docker build -t tgarciam/goals-api .
-      - run: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-      - run: docker push tgarciam/goals-api
 
-  # lint:
-  #   docker:
-  #     - image: tgarciam/goals-api:latest
-  #   steps:
-  #     - attach_workspace:
-  #         at: build/
-  #         name: build B
-  #     - run: docker-compose --file docker-compose.ci.yml run --rm api bin/lint
+  lint:
+    executor:
+      name: ubuntu-machine
+      docker_layer_caching: true
+    steps:
+      - checkout
+      - run: docker-compose --file docker-compose.ci.yml run --rm api bin/lint
 
   test:
-    docker:
-      - image: tgarciam/goals-api:latest
+    executor:
+      name: ubuntu-machine
+      docker_layer_caching: true
     steps:
       - checkout
-      - attach_workspace:
-          at: build/
-          name: build C
       # - run: mkdir ./junit
-      - run: docker-compose --file docker-compose.ci.yml up -d mongo
+      - run: docker-compose --file docker-compose.ci.yml build
       - run: docker-compose --file docker-compose.ci.yml run --rm api bin/test
       # - store_test_results:
       #     path: ./junit
       # - store_artifacts:
       #     path: ./junit
 
+# Orchestrate our job run sequence
 workflows:
-  build-and-test:
+  build_and_test:
     jobs:
       - build
-      # - lint:
-      #     requires:
-      #       - build
+      - lint:
+          requires:
+            - build
       - test:
           requires:
             - build
+
+executors:
+  ubuntu-machine:
+    parameters:
+      docker_layer_caching:
+        default: false
+        type: boolean
+      resource_class:
+        default: medium
+        type: string
+    machine:
+      # See https://circleci.com/docs/2.0/configuration-reference/#available-machine-images
+      # Ubuntu 20.04, Docker v20.10.6, Docker Compose v1.29.1
+      image: ubuntu-2004:202104-01

@@ -73,9 +73,10 @@ executors:
 jobs:
   build:
     executor: custom-executor
-    docker_layer_caching: true
     steps:
       - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
       - run: docker-compose --file docker-compose.ci.yml build
 
 workflows:

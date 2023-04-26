@@ -113,9 +113,11 @@ jobs:
 
   test:
     docker:
-      - image: tgarciam/goals-api:latest
+      - image: docker:latest
     steps:
       - checkout
+      - setup_remote_docker
+      - run: docker pull tgarciam/goals-api
       - run: docker-compose up -d mongo
       - run: docker-compose run --rm api bin/test
 
@@ -126,4 +128,3 @@ workflows:
       - test:
           requires:
             - build
-

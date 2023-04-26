@@ -107,7 +107,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - run: docker build -t tgarciam/goals-api .
+      - run: docker-compose --file docker-compose.ci.yml build
       - run: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
       - run: docker push tgarciam/goals-api
 
@@ -118,7 +118,7 @@ jobs:
       - checkout
       - setup_remote_docker
       - run: docker pull tgarciam/goals-api
-      - run: docker-compose up -d mongo
+      - run: docker-compose --file docker-compose.ci.yml up -d mongo
       - run: docker-compose run --rm api bin/test
 
 workflows:

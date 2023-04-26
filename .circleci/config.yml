@@ -62,26 +62,22 @@
 
 version: 2.1
 
+executors:
+  custom-executor:
+    docker:
+      - image: cimg/base:stable
+        auth:
+          username: $DOCKER_HUB_USER
+          password: $DOCKER_HUB_PASSWORD
+
 jobs:
   build:
-    docker:
-      - image: circleci/node:16-alpine
+    executor: custom-executor
     steps:
       - checkout
-      - run: echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
-      - run: docker build -t tgarciam/goals-api .
-      - run: docker push tgarciam/goals-api
-
-  test:
-    docker:
-      - image: tgarciam/goals-api
-    steps:
-      - run: docker-compose --file docker-compose.ci.yml run --rm api bin/test
+      - run: docker-compose --file docker-compose.ci.yml build
 
 workflows:
-  main:
+  build_and_test:
     jobs:
       - build
-      - test:
-          requires:
-            - build

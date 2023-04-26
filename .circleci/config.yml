@@ -69,17 +69,11 @@ executors:
         auth:
           username: $DOCKER_HUB_USER
           password: $DOCKER_HUB_PASSWORD
-    parameters:
-      docker_layer_caching:
-        default: false
-        type: boolean
-      resource_class:
-        default: medium
-        type: string
 
 jobs:
   build:
     executor: custom-executor
+    docker_layer_caching: true
     steps:
       - checkout
       - run: docker-compose --file docker-compose.ci.yml build

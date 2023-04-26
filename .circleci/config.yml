@@ -68,6 +68,7 @@ jobs:
       - image: circleci/node:16-alpine
     steps:
       - checkout
+      - command: echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
       - run: docker build -t tgarciam/goals-api .
       - run: docker push tgarciam/goals-api
 

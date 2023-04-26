@@ -60,24 +60,56 @@
 #       image: ubuntu-2004:202104-01
 
 
+# version: 2.1
+
+# executors:
+#   custom-executor:
+#     docker:
+#       - image: cimg/base:stable
+#         auth:
+#           username: $DOCKER_HUB_USER
+#           password: $DOCKER_HUB_PASSWORD
+
+# jobs:
+#   build:
+#     executor: custom-executor
+#     steps:
+#       - checkout
+#       - setup_remote_docker:
+#           docker_layer_caching: true
+#       - run: docker-compose --file docker-compose.ci.yml build
+
+#   test:
+#     docker:
+#       - image: tgarciam/goals-api:latest
+#     steps:
+#       - checkout
+#       - run: docker-compose up -d mongo
+#       - run: docker-compose run --rm api bin/test
+
+# workflows:
+#   build-and-test:
+#     jobs:
+#       - build
+#       - test:
+#           requires:
+#             - build
+
 version: 2.1
 
-executors:
-  custom-executor:
+jobs:
+  build:
     docker:
       - image: cimg/base:stable
         auth:
           username: $DOCKER_HUB_USER
           password: $DOCKER_HUB_PASSWORD
-
-jobs:
-  build:
-    executor: custom-executor
     steps:
       - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run: docker-compose --file docker-compose.ci.yml build
+      - setup_remote_docker
+      - run: docker build -t tgarciam/goals-api .
+      - run: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+      - run: docker push tgarciam/goals-api
 
   test:
     docker:
@@ -94,3 +126,4 @@ workflows:
       - test:
           requires:
             - build
+

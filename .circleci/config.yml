@@ -79,7 +79,18 @@ jobs:
           docker_layer_caching: true
       - run: docker-compose --file docker-compose.ci.yml build
 
+  test:
+    docker:
+      - image: tgarciam/goals-api:latest
+    steps:
+      - checkout
+      - run: docker-compose up -d mongo
+      - run: docker-compose run --rm api bin/test
+
 workflows:
-  build_and_test:
+  build-and-test:
     jobs:
       - build
+      - test:
+          requires:
+            - build

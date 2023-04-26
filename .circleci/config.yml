@@ -113,7 +113,7 @@ jobs:
 
   test:
     docker:
-      - image: docker:latest
+      - image: cimg/base:stable
     steps:
       - checkout
       - setup_remote_docker

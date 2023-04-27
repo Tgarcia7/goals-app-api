@@ -109,7 +109,8 @@ jobs:
       - setup_remote_docker
       - run: docker-compose --file docker-compose.ci.yml build
       - run: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-      - run: docker push goals-api tgarciam/goals-api
+      - run: docker tag goals-api tgarciam/goals-api:latest
+      - run: docker push tgarciam/goals-api
 
   test:
     docker:

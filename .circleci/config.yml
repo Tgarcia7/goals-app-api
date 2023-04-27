@@ -176,13 +176,6 @@ jobs:
       - checkout
       - setup_remote_docker
       - run: docker-compose --file docker-compose.ci.yml build
-
-  test:
-    docker:
-      - image: cimg/node:20.0.0
-    steps:
-      - checkout
-      - setup_remote_docker
       - run: docker-compose --file docker-compose.ci.yml up -d mongo
       - run: docker-compose --file docker-compose.ci.yml run --rm api bin/test
 
@@ -190,6 +183,3 @@ workflows:
   build-and-test:
     jobs:
       - build
-      - test:
-          requires:
-            - build

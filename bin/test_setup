@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-# Bring up services required
-docker-compose --file docker-compose.ci.yml up -d mongo

@@ -10,9 +10,20 @@ DB_NAME=goals-test
 SECRET_TOKEN=3{5j*%Y*g7&G@qgr
 ```
 
+# Run
+
+```
+$ docker-compose up -d
+```
+
+# Lint
+
+```
+$ docker-compose --file docker-compose.ci.yml run --rm api bin/lint
+```
+
 # Tests
 
 ```
-$ bin/test_setup
 $ docker-compose --file docker-compose.ci.yml run --rm api bin/test
 ```

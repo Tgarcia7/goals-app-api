@@ -171,7 +171,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: cimg/node:20.0.0
+      - image: cimg/base:stable
     steps:
       - checkout
       - setup_remote_docker

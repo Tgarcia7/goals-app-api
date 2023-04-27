@@ -142,6 +142,7 @@ jobs:
       - checkout
       - run: docker-compose --file docker-compose.ci.yml build
       - run: docker-compose --file docker-compose.ci.yml run --rm api bin/lint
+      - run: docker-compose --file docker-compose.ci.yml up -d mongo
       - run: docker-compose --file docker-compose.ci.yml run --rm api bin/test
 
 # Orchestrate our job run sequence

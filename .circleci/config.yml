@@ -142,7 +142,7 @@ jobs:
       - checkout
       - run: docker-compose --file docker-compose.ci.yml build
       - run: docker-compose --file docker-compose.ci.yml run --rm api bin/lint
-      - run: docker-compose --file docker-compose.ci.yml up -d mongo- run
+      - run: docker-compose --file docker-compose.ci.yml up -d mongo
       - run:
           name: Waiting for Mongo
           command: dockerize -wait tcp://localhost:27017 -timeout 1m

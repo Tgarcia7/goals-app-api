@@ -1,22 +1,35 @@
-version: 2
+version: 2.1
+
 jobs:
   build:
     working_directory: ~/repo
-    docker:
-      - image: circleci/node:14
+    machine:
+      image: ubuntu-2004:2023.04.2
     steps:
       - checkout
-      - run:
-          name: Install Node dependencies
-          command: npm install
-      - run: mkdir ./junit
-      - run:
-          name: Unit tests
-          command: npm run test:junit-report
-          environment:
-            MOCHA_FILE: ./junit/test-results.xml
-          when: always
-      - store_test_results:
-          path: ./junit
-      - store_artifacts:
-          path: ./junit
+      - run: docker-compose --file docker-compose.ci.yml build
+
+  lint:
+    machine:
+      image: ubuntu-2004:2023.04.2
+    steps:
+      - checkout
+      - run: docker-compose --file docker-compose.ci.yml run --rm api bin/lint
+
+  test:
+    machine:
+      image: ubuntu-2004:2023.04.2
+    steps:
+      - checkout
+      - run: docker-compose --file docker-compose.ci.yml run --rm api bin/test
+
+workflows:
+  build_lint_test:
+    jobs:
+      - build
+      - lint:
+          requires:
+            - build
+      - test:
+          requires:
+            - build

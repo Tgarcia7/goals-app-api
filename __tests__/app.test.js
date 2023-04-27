@@ -3,10 +3,6 @@ const expect = require('chai').expect
 const app = require('../app')
 const supertest = require('supertest')
 
-before(() => {
-  process.env.NODE_ENV = 'test'
-})
-
 describe('Healthcheck', function(){
   it('Should return successful response', async () => {
     const res = await supertest(app).get('/test')

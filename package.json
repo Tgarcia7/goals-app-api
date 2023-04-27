@@ -10,10 +10,9 @@
     "dev": "nodemon server.js",
     "lint": "eslint ./",
     "lint:fix": "eslint ./ --fix",
-    "postinstall": "npm run lint",
     "start": "node server.js",
-    "test": "mocha __tests__/*.test.*",
-    "test:junit-report": "mocha __tests__/*.test.* --reporter mocha-junit-reporter"
+    "test": "mocha __tests__/",
+    "test:junit-report": "mocha __tests__/ --reporter mocha-junit-reporter"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",

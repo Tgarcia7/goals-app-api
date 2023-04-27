@@ -16,3 +16,6 @@ npm-debug.log*
 *.sw?
 node_modules
 .DS_Store
+
+# Test files
+junit/*

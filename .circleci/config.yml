@@ -140,11 +140,29 @@ jobs:
     steps:
       - checkout
       - run: docker-compose --file docker-compose.ci.yml build
+
+  lint:
+    machine:
+      image: ubuntu-2004:2023.04.2
+    steps:
+      - checkout
       - run: docker-compose --file docker-compose.ci.yml run --rm api bin/lint
+
+  test:
+    machine:
+      image: ubuntu-2004:2023.04.2
+    steps:
+      - checkout
       - run: docker-compose --file docker-compose.ci.yml up -d mongo
       - run: docker-compose --file docker-compose.ci.yml run --rm api bin/test
 
 workflows:
-  build_lint_and_test:
+  build_and_test:
     jobs:
       - build
+      - lint:
+          requires:
+            - build
+      - test:
+          requires:
+            - build

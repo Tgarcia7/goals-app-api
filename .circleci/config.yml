@@ -130,57 +130,21 @@
 #           requires:
 #             - build
 
-# version: 2.1
-
-# jobs:
-#   build:
-#     working_directory: ~/repo
-#     executor:
-#       name: ubuntu-machine
-#       docker_layer_caching: true
-#     steps:
-#       - checkout
-#       - run: docker-compose --file docker-compose.ci.yml build
-#       - run: docker-compose --file docker-compose.ci.yml run --rm api bin/lint
-#       - run: docker-compose --file docker-compose.ci.yml up -d mongo
-#       - run: docker-compose --file docker-compose.ci.yml run --rm api bin/test
-
-# # Orchestrate our job run sequence
-# workflows:
-#   build_lint_and_test:
-#     jobs:
-#       - build
-
-# executors:
-#   ubuntu-machine:
-#     parameters:
-#       docker_layer_caching:
-#         default: false
-#         type: boolean
-#       resource_class:
-#         default: medium
-#         type: string
-#     machine:
-#       # See https://circleci.com/docs/2.0/configuration-reference/#available-machine-images
-#       # Ubuntu 20.04, Docker v20.10.6, Docker Compose v1.29.1
-#       image: ubuntu-2004:202104-01
-
-
 version: 2.1
 
 jobs:
   build:
     working_directory: ~/repo
-    docker:
-      - image: cimg/node:20.0.0
+    machine:
+      image: ubuntu-2004:2023.04.2
     steps:
       - checkout
-      - setup_remote_docker
       - run: docker-compose --file docker-compose.ci.yml build
+      - run: docker-compose --file docker-compose.ci.yml run --rm api bin/lint
       - run: docker-compose --file docker-compose.ci.yml up -d mongo
       - run: docker-compose --file docker-compose.ci.yml run --rm api bin/test
 
 workflows:
-  build-and-test:
+  build_lint_and_test:
     jobs:
       - build

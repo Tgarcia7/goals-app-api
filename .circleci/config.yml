@@ -30,6 +30,6 @@ workflows:
       - lint:
           requires:
             - build
-      - test:
+      - integration-tests:
           requires:
             - build

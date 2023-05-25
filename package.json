@@ -11,8 +11,7 @@
     "lint": "eslint ./",
     "lint:fix": "eslint ./ --fix",
     "start": "node server.js",
-    "test": "mocha __tests__/",
-    "test:junit-report": "mocha __tests__/ --reporter mocha-junit-reporter"
+    "integration": "mocha __tests__/integration --config __tests__/integration/.mocharc.js"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
@@ -27,8 +26,8 @@
     "chai": "^4.3.4",
     "dotenv": "^8.6.0",
     "eslint": "^7.32.0",
-    "mocha": "^8.1.3",
-    "mocha-junit-reporter": "^2.0.2",
+    "mocha": "^10.2.0",
+    "mocha-junit-reporter": "^2.2.0",
     "nodemon": "^2.0.15",
     "supertest": "^6.1.6"
   }

@@ -16,12 +16,12 @@ jobs:
       - checkout
       - run: docker-compose --file docker-compose.ci.yml run --rm api bin/lint
 
-  test:
+  integration-tests:
     machine:
       image: ubuntu-2004:2023.04.2
     steps:
       - checkout
-      - run: docker-compose --file docker-compose.ci.yml run --rm api bin/test
+      - run: docker-compose --file docker-compose.ci.yml run --rm api bin/integration
 
 workflows:
   build_lint_test:

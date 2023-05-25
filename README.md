@@ -25,5 +25,5 @@ $ docker-compose --file docker-compose.ci.yml run --rm api bin/lint
 # Tests
 
 ```
-$ docker-compose --file docker-compose.ci.yml run --rm api bin/test
+$ docker-compose --file docker-compose.ci.yml run --rm api bin/integration
 ```

@@ -1,7 +1,7 @@
 'use strict'
-const config = require('../config')
+const config = require('../../config')
 const expect = require('chai').expect
-const app = require('../app')
+const app = require('../../app')
 const supertest = require('supertest')
 
 describe('Sign Up', function(){

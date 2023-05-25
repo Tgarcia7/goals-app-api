@@ -1,5 +1,0 @@
---colors
---file globalHooks.js
---spec reporter
---timeout 15000
---trace-deprecation

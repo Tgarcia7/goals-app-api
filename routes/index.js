@@ -2,12 +2,12 @@
 const express = require('express')
 const router = express.Router()
 
-const userController = require('./controllers/user')
-const goalController = require('./controllers/goal')
-const statisticController = require('./controllers/statistic')
-const graphController = require('./controllers/graph')
-const graphStatController = require('./controllers/graph-stat')
-const auth = require('./middlewares/auth')
+const userController = require('../controllers/user')
+const goalController = require('../controllers/goal')
+const statisticController = require('../controllers/statistic')
+const graphController = require('../controllers/graph')
+const graphStatController = require('../controllers/graph-stat')
+const auth = require('../middlewares/auth')
 
 router.get('/test', (req, res) => {
   res.status(200).send({ message: 'Goals RESTful api' })

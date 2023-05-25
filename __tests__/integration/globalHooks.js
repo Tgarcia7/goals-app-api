@@ -1,10 +1,6 @@
 'use strict'
-require('../models/db')
+require('../../models/db')
 const mongoose = require('mongoose')
-
-before(() => {
-  process.env.NODE_ENV = 'test'
-})
 
 after(async () => {
   await cleanDb(mongoose.connection.db)

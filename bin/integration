@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
 
 # Run script defined in package.json
-npm run test
-# :junit-report
+npm run integration

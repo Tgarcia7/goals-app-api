@@ -14,8 +14,6 @@ services:
 
   api:
     container_name: goals-api
-    depends_on:
-      - mongo
     build: .
     env_file: 
       - .ci.env

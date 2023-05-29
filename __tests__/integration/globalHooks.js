@@ -1,10 +1,15 @@
 'use strict'
+
 require('../../models/db')
 const mongoose = require('mongoose')
 
+afterEach(async () => {
+  await cleanDb()
+})
+
 after(async () => {
-  await cleanDb(mongoose.connection.db)
-  mongoose.connection.close( () => process.exit(0) )
+  await mongoose.connection.dropDatabase()
+  await mongoose.connection.close()
 })
 
 // Catch unhandled rejections in tests and hard fail
@@ -14,19 +19,15 @@ process.on('unhandledRejection', (err) => {
   process.exit(1)
 })
 
-const cleanDb = async (db) => {
-  const collections = await db.listCollections().toArray()
-
+const cleanDb = async () => {
+  const collections = mongoose.connection.collections
   const removePromises = []
-  collections
-    .map((collection) => collection.name)
-    .forEach(async (collectionName) => {
-      // skip built in collections or indexes
-      if (collectionName.indexOf('schema_migrations') > -1 || collectionName.indexOf('indexes') > -1) {
-        return
-      }
-      removePromises.push(db.dropCollection(collectionName))
-    })
+
+  for (const key in collections) {
+    if (key.indexOf('schema_migrations') > -1 || key.indexOf('indexes') > -1) return
+    const collection = collections[key]
+    removePromises.push(collection.deleteMany())
+  }
 
   await Promise.all(removePromises)
 }

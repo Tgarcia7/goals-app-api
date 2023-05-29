@@ -7,21 +7,38 @@ jobs:
       image: ubuntu-2004:2023.04.2
     steps:
       - checkout
-      - run: docker-compose --file docker-compose.ci.yml build
+      - run: docker-compose -f docker-compose.ci.yml build api
+    
+  mongo:
+    working_directory: ~/repo
+    machine:
+      image: ubuntu-2004:2023.04.2
+    steps:
+      - checkout
+      - run: docker-compose -f docker-compose.ci.yml build mongo
 
   lint:
     machine:
       image: ubuntu-2004:2023.04.2
     steps:
       - checkout
-      - run: docker-compose --file docker-compose.ci.yml run --rm api bin/lint
+      - run: docker-compose -f docker-compose.ci.yml run --rm cmd bin/lint
+
+  unit-tests:
+    machine:
+      image: ubuntu-2004:2023.04.2
+    steps:
+      - checkout
+      - run: docker-compose -f docker-compose.ci.yml run --rm cmd bin/unit
 
   integration-tests:
     machine:
       image: ubuntu-2004:2023.04.2
     steps:
       - checkout
-      - run: docker-compose --file docker-compose.ci.yml run --rm api bin/integration
+      - run: docker-compose -f docker-compose.ci.yml up -d mongo
+      - run: docker-compose -f docker-compose.ci.yml up -d api
+      - run: docker-compose -f docker-compose.ci.yml run --rm cmd bin/integration
 
 workflows:
   build_lint_test:
@@ -30,6 +47,10 @@ workflows:
       - lint:
           requires:
             - build
+      - unit-tests:
+          requires:
+            - build
       - integration-tests:
           requires:
             - build
+            - mongo

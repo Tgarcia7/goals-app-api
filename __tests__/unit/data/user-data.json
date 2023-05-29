@@ -1,0 +1,36 @@
+[
+  {
+    "_id": {
+      "$oid": "5f3a1853c313e2001770a54c"
+    },
+    "avatar": null,
+    "signupDate": "2020-09-06T18:48:48.890+00:00",
+    "status": 1,
+    "facebook": null,
+    "github": null,
+    "google": null,
+    "lang": "es",
+    "admin": 0,
+    "name": "John Doe",
+    "email": "johndoe@example.com",
+    "password": "abcdefg",
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "5f55352c6670b600178d6ce4"
+    },
+    "avatar": null,
+    "signupDate": "2020-08-17T05:40:33.593+00:00",
+    "status": 1,
+    "facebook": null,
+    "github": null,
+    "google": null,
+    "lang": "en",
+    "admin": 1,
+    "name": "demo",
+    "email": "demo@gmail.com",
+    "password": "abcdefg",
+    "__v": 0
+  }
+]

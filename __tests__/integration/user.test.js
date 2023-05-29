@@ -1,8 +1,8 @@
 'use strict'
+
 const config = require('../../config')
 const expect = require('chai').expect
-const app = require('../../app')
-const supertest = require('supertest')
+const axios = require('axios')
 
 describe('Sign Up', function(){
   it('Should return successful response', async () => {
@@ -12,12 +12,11 @@ describe('Sign Up', function(){
       password: 'abcd',
       admin: 1,
     }
-    const res = 
-        await supertest(app)
-          .post('/signup')
-          .set('Content-type', 'application/json')
-          .set('Authorization', 'Bearer ' + config.TEST_TOKEN)
-          .send(payload)
+
+    const res = await axios.post('http://api:3000/signup',
+      payload,
+      { headers: {'Authorization': 'Bearer ' + config.TEST_TOKEN} }
+    )
 
     expect(res.status).to.equal(201)
   })

@@ -7,15 +7,7 @@ jobs:
       image: ubuntu-2004:2023.04.2
     steps:
       - checkout
-      - run: docker-compose -f docker-compose.ci.yml build api
-    
-  mongo:
-    working_directory: ~/repo
-    machine:
-      image: ubuntu-2004:2023.04.2
-    steps:
-      - checkout
-      - run: docker-compose -f docker-compose.ci.yml build mongo
+      - run: docker-compose -f docker-compose.ci.yml build
 
   lint:
     machine:
@@ -53,4 +45,3 @@ workflows:
       - integration-tests:
           requires:
             - build
-            - mongo

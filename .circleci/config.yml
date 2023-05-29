@@ -33,7 +33,7 @@ jobs:
       - run: docker-compose -f docker-compose.ci.yml run --rm api bin/integration
 
 workflows:
-  build_lint_test:
+  api-pipeline:
     jobs:
       - build
       - lint:

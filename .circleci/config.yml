@@ -22,14 +22,14 @@ jobs:
       image: ubuntu-2004:2023.04.2
     steps:
       - checkout
-      - run: docker-compose -f docker-compose.ci.yml run --rm cmd bin/lint
+      - run: docker-compose -f docker-compose.ci.yml run --rm api bin/lint
 
   unit-tests:
     machine:
       image: ubuntu-2004:2023.04.2
     steps:
       - checkout
-      - run: docker-compose -f docker-compose.ci.yml run --rm cmd bin/unit
+      - run: docker-compose -f docker-compose.ci.yml run --rm api bin/unit
 
   integration-tests:
     machine:
@@ -38,7 +38,7 @@ jobs:
       - checkout
       - run: docker-compose -f docker-compose.ci.yml up -d mongo
       - run: docker-compose -f docker-compose.ci.yml up -d api
-      - run: docker-compose -f docker-compose.ci.yml run --rm cmd bin/integration
+      - run: docker-compose -f docker-compose.ci.yml run --rm api bin/integration
 
 workflows:
   build_lint_test:

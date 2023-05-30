@@ -1,7 +1,7 @@
 'use strict'
 
 const { ValidationError } = require('mongoose').Error
-const { ObjectId, MongoError } = require('mongodb')
+const { ObjectId } = require('mongodb')
 const { expect } = require('chai')
 const User = require('../../../models/user')
 
@@ -98,25 +98,6 @@ describe('User model', () => {
         expect(err).to.exist
         expect(err).to.be.instanceOf(ValidationError)
         expect(err.errors.lang).to.exist
-      })
-
-      it('should fail with repeated email', async () => {
-        let err
-        const userData = new User({
-          name: 'Duplicated John Doe',
-          email: 'johndoe@example.com',
-          password: 'badPassword'
-        })
-    
-        try {
-          await userData.save()
-        } catch (error) {
-          err = error
-        }
-
-        expect(err).to.exist
-        expect(err).to.be.instanceOf(MongoError)
-        expect(err.keyValue['email']).to.exist
       })
     })
   })

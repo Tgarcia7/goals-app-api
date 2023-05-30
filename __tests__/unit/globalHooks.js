@@ -16,7 +16,7 @@ after(async () => {
 
 afterEach(async () => {
   restoreSinonObjects()
-  await cleanDb(mongo, mongoose.connection.db)
+  await cleanDb(mongo)
 })
 
 async function initDb() {
@@ -40,19 +40,16 @@ async function closeDb(mongo) {
   await mongo.stop()
 }
 
-async function cleanDb(mongo, db) {
+async function cleanDb(mongo) {
   if (!mongo) return
 
-  const collections = await db.listCollections().toArray()
+  const collections = mongoose.connection.collections
   const removePromises = []
 
-  collections
-    .map((collection) => collection.name)
-    .forEach(async (collectionName) => {
-      // skip built in collections or indexes
-      if (collectionName.indexOf('schema_migrations') > -1 || collectionName.indexOf('indexes') > -1) return
-      removePromises.push(db.dropCollection(collectionName))
-    })
+  for (const key in collections) {
+    const collection = collections[key]
+    removePromises.push(collection.deleteMany())
+  }
 
   await Promise.all(removePromises)
 }

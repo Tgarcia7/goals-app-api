@@ -21,14 +21,7 @@ describe('POST /signup', () => {
   })
 
   it('Should fail, duplicated email', async () => {
-    const payload = {
-      name: 'userName',
-      email: 'user@test.com',
-      password: 'abcd',
-      admin: 1,
-    }
-
-    const res = await axios.post('/signup', payload, { headers: { 'Authorization': 'Bearer ' + config.TEST_TOKEN } })
+    const res = await axios.post('/signup', testUser, { headers: { 'Authorization': 'Bearer ' + config.TEST_TOKEN } })
 
     expect(res.status).to.equal(409)
     expect(res.data).to.have.property('message')

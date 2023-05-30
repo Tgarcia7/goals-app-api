@@ -13,8 +13,20 @@ after(async () => {
 })
 
 async function closeDb() {
-  await mongoose.connection.dropDatabase()
+  // a clean up is enough instead of a full db drop to avoid messing up the indexes
+  await cleanDb()
   await mongoose.connection.close()
+}
+
+async function cleanDb() {
+  const collections = await mongoose.connection.db.collections()
+  const removePromises = []
+
+  for (const collection of collections) {
+    removePromises.push(collection.deleteMany())
+  }
+
+  await Promise.all(removePromises)
 }
 
 async function generateAPIToken() {

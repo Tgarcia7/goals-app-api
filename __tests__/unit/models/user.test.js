@@ -40,7 +40,7 @@ describe('User model', () => {
     })
 
     describe('with invalid data', () => {
-      it('should fail with empty field', async () => {
+      it('with empty field, then should fail', async () => {
         let err
         userData.password = ''
     
@@ -55,7 +55,7 @@ describe('User model', () => {
         expect(err.errors.password).to.exist
       })
 
-      it('should fail with missing field', async () => {
+      it('with missing field, then should fail', async () => {
         let err
         userData.name = undefined
     
@@ -70,7 +70,7 @@ describe('User model', () => {
         expect(err.errors.name).to.exist
       })
 
-      it('should fail with wrong status', async () => {
+      it('with wrong status, then should fail', async () => {
         let err
         userData.status = 2
     
@@ -85,7 +85,7 @@ describe('User model', () => {
         expect(err.errors.status).to.exist
       })
 
-      it('should fail with wrong lang', async () => {
+      it('with wrong lang, then should fail', async () => {
         let err
         userData.lang = 'ch'
     
@@ -100,7 +100,7 @@ describe('User model', () => {
         expect(err.errors.lang).to.exist
       })
 
-      it('should fail with repeated email', async () => {
+      it('with repeated email, then should fail', async () => {
         let err
         const userData = new User({
           name: 'John Doe',
@@ -169,7 +169,7 @@ describe('User model', () => {
       expect(passwordComparison).to.be.true
     })
 
-    it('shouldn\'t re-apply the hash to the password', async () => {
+    it('should not re-apply the hash to the password', async () => {
       const rawPass = userData.password
       userData.password = user.password
       await User.updateOne({ _id: ObjectId(user._id) }, userData)

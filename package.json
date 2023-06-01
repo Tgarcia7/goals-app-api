@@ -31,7 +31,7 @@
     "mocha": "^10.2.0",
     "mocha-junit-reporter": "^2.2.0",
     "mongodb-memory-server": "^8.12.2",
-    "nodemon": "^2.0.15",
+    "nodemon": "^2.0.22",
     "sinon": "^15.1.0",
     "supertest": "^6.1.6"
   }

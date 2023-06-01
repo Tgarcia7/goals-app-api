@@ -1,4 +1,15 @@
 #!/usr/bin/env bash
 
+# if no filter is defined, run all tests
+basePath="__tests__/unit/"
+arg1=${1}
+arg2=${2}
+
+if [[ "$arg1" == "-g" ]]; then
+  filter="$basePath -- $arg1 $arg2"
+else
+  filter=${arg1:-$basePath}
+fi
+
 # Run script defined in package.json
-npm run unit
+npm run unit $filter

@@ -1,10 +1,13 @@
 'use strict'
 
-require('../../models/db')
 const mongoose = require('mongoose')
 const { axios, getTestToken } = require('./test-utils')
 
 before(async () => {
+  // start DB only if tests are started, omitted when no tests are found
+  require('../../models/db')
+  // makes sure db is clean before running
+  await cleanDb()
   generateAPIToken()
 })
 
@@ -19,7 +22,10 @@ async function closeDb() {
 }
 
 async function cleanDb() {
-  const collections = await mongoose.connection.db.collections()
+  const db = mongoose.connection.db
+  if (!db) return 
+
+  const collections = await db.collections()
   const removePromises = []
 
   for (const collection of collections) {

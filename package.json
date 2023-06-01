@@ -11,8 +11,8 @@
     "lint": "eslint ./",
     "lint:fix": "eslint ./ --fix",
     "start": "node server.js",
-    "unit": "mocha __tests__/unit/ --config __tests__/unit/.mocharc.js",
-    "integration": "mocha __tests__/integration/ --config __tests__/integration/.mocharc.js"
+    "unit": "mocha --config __tests__/unit/.mocharc.js",
+    "integration": "mocha --config __tests__/integration/.mocharc.js"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",

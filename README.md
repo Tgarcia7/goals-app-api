@@ -30,7 +30,7 @@ $ docker-compose -f docker-compose.ci.yml run --rm api bin/unit
 # run specific group of tests
 $ docker-compose -f docker-compose.ci.yml run --rm api bin/unit __tests__/unit/models/
 # run tests matching a pattern
-$ docker-compose -f docker-compose.ci.yml run --rm api bin/unit -g "transform"
+$ docker-compose -f docker-compose.ci.yml run --rm api bin/unit -g "test-description" # e.g.: "transform"
 ```
 
 # Integration tests
@@ -44,5 +44,5 @@ $ docker-compose -f docker-compose.ci.yml run --rm api bin/integration
 # run specific group of tests
 $ docker-compose -f docker-compose.ci.yml run --rm api bin/integration __tests__/integration/general/app.test.js
 # run tests matching a pattern
-$ docker-compose -f docker-compose.ci.yml run --rm api bin/integration -g "/test"
+$ docker-compose -f docker-compose.ci.yml run --rm api bin/integration -g "test-description" # e.g.: "/test"
 ```

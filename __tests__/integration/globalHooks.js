@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 const { axios, getTestToken } = require('./test-utils')
 
 before(async () => {
-  // start DB only if tests are started, omitted when no tests are found
+  // start DB only if tests are started, omitted when no tests are run
   require('../../models/db')
   // makes sure db is clean before running
   await cleanDb()

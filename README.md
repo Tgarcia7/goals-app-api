@@ -22,8 +22,27 @@ $ docker-compose up -d
 $ docker-compose --file docker-compose.ci.yml run --rm api bin/lint
 ```
 
-# Tests
+# Unit tests
 
+```bash
+# run all unit test
+$ docker-compose -f docker-compose.ci.yml run --rm api bin/unit
+# run specific group of tests
+$ docker-compose -f docker-compose.ci.yml run --rm api bin/unit __tests__/unit/models/
+# run tests matching a pattern
+$ docker-compose -f docker-compose.ci.yml run --rm api bin/unit -g "transform"
 ```
-$ docker-compose --file docker-compose.ci.yml run --rm api bin/test
+
+# Integration tests
+
+```bash
+# start mongo
+$ docker-compose -f docker-compose.ci.yml up -d mongo
+$ docker-compose -f docker-compose.ci.yml up -d api
+# run all tests
+$ docker-compose -f docker-compose.ci.yml run --rm api bin/integration
+# run specific group of tests
+$ docker-compose -f docker-compose.ci.yml run --rm api bin/integration __tests__/integration/general/app.test.js
+# run tests matching a pattern
+$ docker-compose -f docker-compose.ci.yml run --rm api bin/integration -g "/test"
 ```

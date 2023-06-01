@@ -1,8 +1,11 @@
 version: '3'
 services:
   mongo:
-    container_name: goals-mongo
+    container_name: testing-mongo
     image: mongo
+    environment:
+      - MONGODB_SMALL_FILES=true
+      - MONGODB_DISABLE_BACKGROUND_WRITES=true
     ports:
        - 27017:27017
     command: "mongod"
@@ -13,9 +16,7 @@ services:
       - ~/mongo/data:/data/db
 
   api:
-    container_name: goals-api
-    depends_on:
-      - mongo
+    container_name: testing-api
     build: .
     env_file: 
       - .ci.env

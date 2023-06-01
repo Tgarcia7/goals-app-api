@@ -2,12 +2,12 @@
 const express = require('express')
 const router = express.Router()
 
-const userController = require('./controllers/user')
-const goalController = require('./controllers/goal')
-const statisticController = require('./controllers/statistic')
-const graphController = require('./controllers/graph')
-const graphStatController = require('./controllers/graph-stat')
-const auth = require('./middlewares/auth')
+const userController = require('../controllers/user')
+const goalController = require('../controllers/goal')
+const statisticController = require('../controllers/statistic')
+const graphController = require('../controllers/graph')
+const graphStatController = require('../controllers/graph-stat')
+const auth = require('../middlewares/auth')
 
 router.get('/test', (req, res) => {
   res.status(200).send({ message: 'Goals RESTful api' })
@@ -42,5 +42,10 @@ router.put('/statistics/:id', auth, statisticController.update)
 router.delete('/statistics/:id', auth, statisticController.deleteOne)
 
 router.get('/graphs-stats', auth, graphStatController.findByUser)
+
+// Handle 404
+router.use((req, res) => {
+  res.status(404).send({ message: 'Not found' })
+})
 
 module.exports = router

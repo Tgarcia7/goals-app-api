@@ -43,7 +43,7 @@ UserSchema.pre('updateOne', async function (next) {
   }
 })
 
-UserSchema.methods.comparePassword = function(candidatePassword) {
+UserSchema.method('comparePassword', function(candidatePassword) {
   let user = this
   return new Promise((resolve, reject) => {
     bcrypt.compare(candidatePassword, user.password)
@@ -54,7 +54,7 @@ UserSchema.methods.comparePassword = function(candidatePassword) {
         reject(error)
       })
   })
-}
+})
 
 function hashPassword (password) {
   return new Promise((resolve, reject) => {

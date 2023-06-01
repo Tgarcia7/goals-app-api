@@ -21,8 +21,10 @@ describe('General endpoints', function () {
   })
 })
 
-// The following attempts to test the API more in deep, stubbing the controllers,
-// however it still needs more work.
+// TODO: The following attempts to test the API more in deep, stubbing the controllers,
+//  however it still needs more work.
+//  As it is now, it only allows to set one behavior for each stub, all doubles have to
+//  be configured before importing the app.
 
 // const config = require('../../config')
 // const sinon = require('sinon')

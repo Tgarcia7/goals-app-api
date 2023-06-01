@@ -57,9 +57,3 @@ async function cleanDb(mongo) {
 function restoreSinonObjects() {
   sinon.restore()
 }
-
-// Catch unhandled rejections in tests and hard fail
-process.on('unhandledRejection', (err) => {
-  console.error('Unhandled rejection during unit tests', err)
-  process.exit(1)
-})

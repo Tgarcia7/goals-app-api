@@ -4,28 +4,28 @@ jobs:
   build:
     working_directory: ~/repo
     machine:
-      image: ubuntu-2004:2023.04.2
+      image: ubuntu-2204:current
     steps:
       - checkout
       - run: docker-compose -f docker-compose.ci.yml build
 
   lint:
     machine:
-      image: ubuntu-2004:2023.04.2
+      image: ubuntu-2204:current
     steps:
       - checkout
       - run: docker-compose -f docker-compose.ci.yml run --rm api bin/lint
 
   unit-tests:
     machine:
-      image: ubuntu-2004:2023.04.2
+      image: ubuntu-2204:current
     steps:
       - checkout
       - run: docker-compose -f docker-compose.ci.yml run --rm api bin/unit
 
   integration-tests:
     machine:
-      image: ubuntu-2004:2023.04.2
+      image: ubuntu-2204:current
     steps:
       - checkout
       - run: docker-compose -f docker-compose.ci.yml up -d mongo

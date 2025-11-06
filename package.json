@@ -15,24 +15,24 @@
     "integration": "mocha --config __tests__/integration/.mocharc.js"
   },
   "dependencies": {
-    "bcrypt": "^5.0.1",
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
-    "express": "^4.17.2",
-    "jsonwebtoken": "^8.5.1",
-    "moment": "^2.29.1",
-    "mongoose": "^5.13.14",
-    "uuid": "^8.3.2"
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "moment": "^2.30.1",
+    "mongoose": "^8.19.3",
+    "uuid": "^11.0.4"
   },
   "devDependencies": {
-    "axios": "^1.4.0",
-    "chai": "^4.3.4",
-    "dotenv": "^8.6.0",
-    "eslint": "^7.32.0",
-    "mocha": "^10.2.0",
-    "mocha-junit-reporter": "^2.2.0",
-    "mongodb-memory-server": "^8.12.2",
-    "nodemon": "^2.0.15",
-    "sinon": "^15.1.0",
-    "supertest": "^6.1.6"
+    "axios": "^1.7.9",
+    "chai": "^4.5.0",
+    "dotenv": "^16.4.7",
+    "eslint": "^8.57.1",
+    "mocha": "^10.8.2",
+    "mocha-junit-reporter": "^2.2.1",
+    "mongodb-memory-server": "^10.1.5",
+    "nodemon": "^3.1.9",
+    "sinon": "^19.0.2",
+    "supertest": "^7.0.0"
   }
 }

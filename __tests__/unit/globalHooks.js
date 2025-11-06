@@ -20,14 +20,16 @@ afterEach(async () => {
 })
 
 async function initDb() {
-  const mongo = await MongoMemoryServer.create()
+  // Let mongodb-memory-server auto-detect best available version
+  // In CI/CD, tests should be run via Docker which provides MongoDB container
+  const mongo = await MongoMemoryServer.create({
+    instance: {
+      storageEngine: 'wiredTiger'
+    }
+  })
   const url = mongo.getUri()
 
-  await mongoose.connect(url, {
-    useCreateIndex: true, 
-    useUnifiedTopology: true, 
-    useNewUrlParser: true
-  })
+  await mongoose.connect(url)
 
   return mongo
 }

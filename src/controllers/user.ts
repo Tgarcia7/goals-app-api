@@ -17,8 +17,7 @@ interface MongoError extends Error {
 async function findAll(_req: AuthenticatedRequest, res: Response): Promise<void> {
   try {
     const filter = { status: 1 }
-    const excludedFields = { __v: 0, password: 0, signupDate: 0 }
-    const users = await User.find(filter, excludedFields)
+    const users = await User.find(filter).select('-__v -password -signupDate')
 
     res.status(200).send(users)
   } catch (error) {
@@ -35,8 +34,7 @@ async function findById(req: AuthenticatedRequest, res: Response): Promise<void>
     }
 
     const filter = { '_id': new Types.ObjectId(req.params.id) }
-    const excludedFields = { __v: 0, password: 0, signupDate: 0 }
-    const user = await User.findOne(filter, excludedFields)
+    const user = await User.findOne(filter).select('-__v -password -signupDate')
 
     if (!user) {
       res.status(404).send({ message: 'Not found' })

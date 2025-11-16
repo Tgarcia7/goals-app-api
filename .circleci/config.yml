@@ -6,6 +6,9 @@ jobs:
     machine:
       image: ubuntu-2204:current
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "SHA256:PR+57400eVa3eWddXCyqiDkw6Hk1zMO5g3yEmuHFCrU"
       - checkout
       - run: docker-compose -f docker-compose.ci.yml build
 
@@ -13,6 +16,9 @@ jobs:
     machine:
       image: ubuntu-2204:current
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "SHA256:PR+57400eVa3eWddXCyqiDkw6Hk1zMO5g3yEmuHFCrU"
       - checkout
       - run: docker-compose -f docker-compose.ci.yml run --rm api bin/lint
 
@@ -20,6 +26,9 @@ jobs:
     machine:
       image: ubuntu-2204:current
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "SHA256:PR+57400eVa3eWddXCyqiDkw6Hk1zMO5g3yEmuHFCrU"
       - checkout
       - run: docker-compose -f docker-compose.ci.yml run --rm api bin/unit
 
@@ -27,6 +36,9 @@ jobs:
     machine:
       image: ubuntu-2204:current
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "SHA256:PR+57400eVa3eWddXCyqiDkw6Hk1zMO5g3yEmuHFCrU"
       - checkout
       - run: docker-compose -f docker-compose.ci.yml up -d mongo
       - run: docker-compose -f docker-compose.ci.yml up -d api

@@ -5,7 +5,7 @@ export interface UserPayload {
   userId: string
   name: string
   email: string
-  admin: boolean
+  admin: number
 }
 
 export interface AuthenticatedRequest extends Request {

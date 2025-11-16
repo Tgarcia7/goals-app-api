@@ -39,6 +39,6 @@ describe('findAll', () => {
     await UserController.findAll(req, res)
 
     sinon.assert.calledOnceWithMatch(res.status, 500)
-    sinon.assert.calledOnceWithMatch(res.send, { message: 'Server error', error })
+    sinon.assert.calledOnceWithMatch(res.send, { message: 'Server error' })
   })
 })

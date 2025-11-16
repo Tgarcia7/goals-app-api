@@ -63,13 +63,13 @@ describe('/signIn', () => {
         expect(res.data.message).to.equal('Missing params')
       })
 
-      it('with wrong token, then should be unauthorized', async () => {
+      it('with non-existent email, then should be unauthorized', async () => {
         const payload = {
-          email: testUser.email,
+          email: 'nonexistent@test.com',
           password: testUser.password
         }
 
-        const res = await axios.post('/signin', payload, { headers: { 'Authorization': '' } })
+        const res = await axios.post('/signin', payload)
 
         expect(res.status).to.equal(401)
         expect(res.data).to.have.property('message')

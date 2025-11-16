@@ -17,13 +17,13 @@ function createToken(user) {
     exp: moment().add(15, 'minutes').unix()
   }
 
-  return jwt.sign(payload, config.SECRET_TOKEN)
+  return jwt.sign(payload, config.SECRET_TOKEN, { algorithm: 'HS256' })
 }
 
 function decodeToken(token) {
   const decoded = new Promise((resolve, reject) => {
     try {
-      const payload = jwt.verify(token, config.SECRET_TOKEN)
+      const payload = jwt.verify(token, config.SECRET_TOKEN, { algorithms: ['HS256'] })
 
       resolve(payload.sub)
     } catch (err) {

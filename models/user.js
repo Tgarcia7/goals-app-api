@@ -1,3 +1,4 @@
+'use strict'
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 const Schema = mongoose.Schema
@@ -8,7 +9,7 @@ const UserSchema = new Schema({
   avatar: { type: String, default: null },
   email: { type: String, unique: true, required: true, lowercase: true },
   password: { type: String, required: true },
-  signupDate: { type: Date, default: Date.now() },
+  signupDate: { type: Date, default: Date.now },
   status: { type: Number, enum: [1, 0], default: 1, select: false },
   facebook: { type: String, default: null },
   github: { type: String, default: null },
@@ -26,7 +27,7 @@ UserSchema.pre('save', async function (next) {
     user.password = await hashPassword(user.password)
     next()
   } catch (error) {
-    return error
+    return next(error)
   }
 })
 
@@ -39,7 +40,7 @@ UserSchema.pre('updateOne', async function (next) {
     user.password = await hashPassword(user.password)
     next()
   } catch (error) {
-    return error
+    return next(error)
   }
 })
 

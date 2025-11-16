@@ -1,14 +1,32 @@
 'use strict'
 
+const config = require('../../../config')
 const expect = require('chai').expect
 const { axios } = require('../test-utils')
 
 describe('/graphs-stats', () => {
+  let authToken
+
+  before(async () => {
+    // Create a unique user for this test suite
+    const graphStatUser = {
+      name: 'graphStatUser',
+      email: 'graphstat@test.com',
+      password: 'testpass'
+    }
+
+    const res = await axios.post('/signup', graphStatUser, {
+      headers: { 'Authorization': 'Bearer ' + config.TEST_TOKEN }
+    })
+    authToken = res.data.token
+  })
+
   describe('GET', () => {
     describe('with authentication', () => {
-      // Uses default auth header set by globalHooks.js
       it('should return stats and graphs structure', async () => {
-        const res = await axios.get('/graphs-stats')
+        const res = await axios.get('/graphs-stats', {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        })
 
         expect(res.status).to.equal(200)
         expect(res.data).to.have.property('stats')
@@ -18,7 +36,9 @@ describe('/graphs-stats', () => {
       })
 
       it('should return empty arrays for new user', async () => {
-        const res = await axios.get('/graphs-stats')
+        const res = await axios.get('/graphs-stats', {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        })
 
         expect(res.status).to.equal(200)
         expect(res.data.stats).to.be.an('array')

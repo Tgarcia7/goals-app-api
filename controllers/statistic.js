@@ -25,7 +25,7 @@ async function add (req, res) {
 
 async function findByUser (req, res) {
   try {
-    const filter = { userId: new ObjectId(req.user) }
+    const filter = { userId: new ObjectId(req.user.userId) }
     const statistic = await Statistic.find(filter)
 
     if (!Object.keys(statistic).length) return res.status(404).send({ message: 'Not found' })
@@ -56,7 +56,7 @@ async function update (req, res) {
     const filter = { '_id': new ObjectId(req.params.id) }
     const result = await Statistic.updateOne(filter, req.body)
 
-    res.status(200).send({ message: 'Update completed', updatedRows: result.nModified })
+    res.status(200).send({ message: 'Update completed', updatedRows: result.modifiedCount })
   } catch (error) {
     console.error(error)
     res.status(500).send({ message: 'Server error', error })

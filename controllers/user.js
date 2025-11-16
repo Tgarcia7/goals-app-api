@@ -24,11 +24,11 @@ async function findById (req, res) {
   try {
     const filter = { '_id': new ObjectId(req.params.id) }
     const excludedFields = { __v: 0, password: 0, signupDate: 0 }
-    const user = await User.find(filter, excludedFields)
+    const user = await User.findOne(filter, excludedFields)
 
     if (!user) return res.status(404).send({ message: 'Not found' })
-    
-    res.status(200).send(user[0].transform()) 
+
+    res.status(200).send(user.transform()) 
   } catch (error) {
     console.error(error)
     res.status(500).send({ message: 'Server error', error }) 
@@ -40,7 +40,7 @@ async function update (req, res) {
     delete req.body['password']
     const updateResult = await User.updateOne({ _id: new ObjectId(req.params.id) }, req.body)
 
-    res.status(200).send({ message: 'Update completed', updatedRows: updateResult.nModified })
+    res.status(200).send({ message: 'Update completed', updatedRows: updateResult.modifiedCount })
   } catch (error) {
     console.error(error)
     if (error && error.code === 11000) {
@@ -131,7 +131,7 @@ async function changePassword (req, res) {
 
     const updateResult = await User.updateOne({ _id: new ObjectId(req.params.id) }, { password: newPassword })
 
-    res.status(200).send({ message: 'Update completed', updatedRows: updateResult.nModified })
+    res.status(200).send({ message: 'Update completed', updatedRows: updateResult.modifiedCount })
   } catch (error) {
     console.error(error)
     res.status(500).send({ message: 'Server error', error })
@@ -167,7 +167,7 @@ async function addRefreshToken (user) {
     
     const newRefreshToken = new RefreshToken({
       token: uuid.v4(),
-      user: { 
+      user: {
         _id: user._id,
         name: user.name,
         email: user.email,
@@ -175,11 +175,11 @@ async function addRefreshToken (user) {
       }
     })
 
-    newRefreshToken.save()
+    await newRefreshToken.save()
 
-    return newRefreshToken.token  
+    return newRefreshToken.token
   } catch (error) {
-    return error
+    throw error
   }
 }
 

@@ -14,8 +14,7 @@ mongoose.connection.on('error', err => {
 }) 
 
 // If Node process ends
-process.on('SIGINT', () => {   
-  mongoose.connection.close( () => {
-    process.exit(0)
-  })
+process.on('SIGINT', async () => {
+  await mongoose.connection.close()
+  process.exit(0)
 })

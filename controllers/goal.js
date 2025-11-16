@@ -73,7 +73,7 @@ async function update (req, res) {
     const filter = { '_id': new ObjectId(req.params.id) }
     const result = await Goal.updateOne(filter, req.body)
 
-    res.status(200).send({ message: 'Update completed', updatedRows: result.nModified })
+    res.status(200).send({ message: 'Update completed', updatedRows: result.modifiedCount })
   } catch (error) {
     console.error(error)
     res.status(500).send({ message: 'Server error', error })

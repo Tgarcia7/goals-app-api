@@ -2,7 +2,7 @@ version: '3'
 services:
   mongo:
     container_name: testing-mongo
-    image: mongo
+    image: mongo:7.0
     environment:
       - MONGODB_SMALL_FILES=true
       - MONGODB_DISABLE_BACKGROUND_WRITES=true
@@ -10,8 +10,10 @@ services:
        - 27017:27017
     command: "mongod"
     healthcheck:
-      test: ["CMD-SHELL", "mongo --quiet 'localhost/test' --eval 'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)'"]
+      test: ["CMD-SHELL", "mongosh --quiet localhost/test --eval 'db.runCommand({ ping: 1 }).ok ? process.exit(0) : process.exit(1)'"]
       interval: 10s
+      timeout: 5s
+      retries: 3
     volumes: 
       - ~/mongo/data:/data/db
 

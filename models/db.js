@@ -3,11 +3,8 @@ const config = require('../config')
 
 mongoose.connect(
   config.DB_URI,
-  { 
-    useCreateIndex: true, 
-    useUnifiedTopology: true, 
-    useNewUrlParser: true, 
-    dbName: config.DB_NAME 
+  {
+    dbName: config.DB_NAME
   }
 )
   

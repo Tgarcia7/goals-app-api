@@ -12,33 +12,45 @@ async function findAll (req, res) {
     const filter = { status: 1 }
     const excludedFields = { __v: 0, password: 0, signupDate: 0 }
     const users = await User.find(filter, excludedFields)
-    
+
     res.status(200).send(users)
   } catch (error) {
     console.error(error)
-    res.status(500).send({ message: 'Server error', error })
+    res.status(500).send({ message: 'Server error' })
   }
 }
 
 async function findById (req, res) {
   try {
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(400).send({ message: 'Invalid ID format' })
+    }
+
     const filter = { '_id': new ObjectId(req.params.id) }
     const excludedFields = { __v: 0, password: 0, signupDate: 0 }
     const user = await User.findOne(filter, excludedFields)
 
     if (!user) return res.status(404).send({ message: 'Not found' })
 
-    res.status(200).send(user.transform()) 
+    res.status(200).send(user.transform())
   } catch (error) {
     console.error(error)
-    res.status(500).send({ message: 'Server error', error }) 
+    res.status(500).send({ message: 'Server error' })
   }
 }
 
 async function update (req, res) {
   try {
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(400).send({ message: 'Invalid ID format' })
+    }
+
     delete req.body['password']
     const updateResult = await User.updateOne({ _id: new ObjectId(req.params.id) }, req.body)
+
+    if (updateResult.matchedCount === 0) {
+      return res.status(404).send({ message: 'Not found' })
+    }
 
     res.status(200).send({ message: 'Update completed', updatedRows: updateResult.modifiedCount })
   } catch (error) {
@@ -46,20 +58,28 @@ async function update (req, res) {
     if (error && error.code === 11000) {
       res.status(409).send({ message: 'Email duplicated' })
     } else {
-      res.status(500).send({ message: `Error creating the user. ${error}` })
+      res.status(500).send({ message: 'Server error' })
     }
   }
 }
 
 async function deleteOne (req, res) {
   try {
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(400).send({ message: 'Invalid ID format' })
+    }
+
     const filter = { '_id': new ObjectId(req.params.id) }
     const deleteResult = await User.deleteOne(filter)
+
+    if (deleteResult.deletedCount === 0) {
+      return res.status(404).send({ message: 'Not found' })
+    }
 
     res.status(200).send({ message: 'Delete completed', deletedRows: deleteResult.deletedCount })
   } catch (error) {
     console.error(error)
-    res.status(500).send({ message: 'Server error', error })
+    res.status(500).send({ message: 'Server error' })
   }
 }
 
@@ -71,12 +91,12 @@ async function signUp (req, res) {
       password: req.body.password,
       admin: req.body.admin
     })
-  
+
     await user.save()
     const jwt = tokenService.createToken(user)
 
     const statsPromises = [
-      initialStats(user._id), 
+      initialStats(user._id),
       initialGraphs(user._id)
     ]
 
@@ -88,7 +108,7 @@ async function signUp (req, res) {
     if (error && error.code === 11000) {
       res.status(409).send({ message: 'Email duplicated' })
     } else {
-      res.status(500).send({ message: `Error creating the user. ${error}` })
+      res.status(500).send({ message: 'Server error' })
     }
   }
 }
@@ -102,17 +122,17 @@ async function signIn (req, res) {
     const user = await User.findOne(filter)
 
     if (!user) return res.status(401).send({ message: 'Unauthorized' })
-    
+
     const found = await user.comparePassword(password)
     if (!found) return res.status(401).send({ message: 'Unauthorized' })
-    
+
     const refreshToken = await addRefreshToken(user)
     const token = tokenService.createToken(user)
 
     res.status(200).send({ message: 'Authenticated', token, refreshToken })
   } catch (error) {
     console.error(error)
-    res.status(500).send({ message: 'Server error', error })
+    res.status(500).send({ message: 'Server error' })
   }
 }
 
@@ -121,20 +141,28 @@ async function changePassword (req, res) {
   if ( !password || !email || !newPassword ) return res.status(400).send({ message: 'Missing params' })
 
   try {
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.status(400).send({ message: 'Invalid ID format' })
+    }
+
     const filter = { email: email }
     const user = await User.findOne(filter)
 
-    if ( !Object.keys(user).length ) return res.status(400).send({ message: 'Bad request' })
-    
+    if (!user) return res.status(400).send({ message: 'Bad request' })
+
     const found = await user.comparePassword(password)
     if (!found) return res.status(400).send({ message: 'Bad request' })
 
     const updateResult = await User.updateOne({ _id: new ObjectId(req.params.id) }, { password: newPassword })
 
+    if (updateResult.matchedCount === 0) {
+      return res.status(404).send({ message: 'Not found' })
+    }
+
     res.status(200).send({ message: 'Update completed', updatedRows: updateResult.modifiedCount })
   } catch (error) {
     console.error(error)
-    res.status(500).send({ message: 'Server error', error })
+    res.status(500).send({ message: 'Server error' })
   }
 }
 
@@ -154,7 +182,7 @@ async function refreshToken (req, res) {
     }
   } catch (error) {
     console.error(error)
-    res.status(500).send({ message: `Server error: ${error}` })
+    res.status(500).send({ message: 'Server error' })
   }
 }
 
@@ -164,7 +192,7 @@ async function addRefreshToken (user) {
     const refreshToken = await RefreshToken.findOne(filter)
 
     if (refreshToken) return refreshToken.token
-    
+
     const newRefreshToken = new RefreshToken({
       token: uuid.v4(),
       user: {
@@ -185,7 +213,7 @@ async function addRefreshToken (user) {
 
 async function deleteRefreshToken (req, res) {
   try {
-    if ( !req.user.admin ) return res.status(401).send({ message: 'Unauthorized' }) 
+    if ( !req.user.admin ) return res.status(401).send({ message: 'Unauthorized' })
 
     const filter = { token: req.params.id }
     const deleteResult = await RefreshToken.deleteOne(filter)
@@ -193,7 +221,7 @@ async function deleteRefreshToken (req, res) {
     res.status(200).send({ message: 'Delete completed', deletedRows: deleteResult.deletedCount })
   } catch (error) {
     console.error(error)
-    res.status(500).send({ message: 'Server error', error })
+    res.status(500).send({ message: 'Server error' })
   }
 }
 
@@ -203,7 +231,7 @@ module.exports = {
   signUp,
   signIn,
   update,
-  deleteOne, 
+  deleteOne,
   refreshToken,
   deleteRefreshToken,
   changePassword

@@ -60,7 +60,8 @@ describe('/graphs-stats', () => {
     describe('with invalid token', () => {
       it('should return error', async () => {
         const res = await axios.get('/graphs-stats', {
-          headers: { 'Authorization': 'Bearer invalid-token' }
+          headers: { 'Authorization': 'Bearer invalid-token' },
+          validateStatus: () => true // Accept any status code including 500
         })
 
         // JWT service returns 500 for invalid tokens (not expired)

@@ -1,7 +1,7 @@
 'use strict'
 
 const { ValidationError } = require('mongoose').Error
-const { ObjectId, MongoError } = require('mongodb')
+const { ObjectId } = require('mongodb')
 const { expect } = require('chai')
 const User = require('../../../models/user')
 
@@ -107,7 +107,7 @@ describe('User model', () => {
           email: 'johndoe@example.com',
           password: 'badPassword'
         })
-    
+
         try {
           await userData.save()
         } catch (error) {
@@ -115,7 +115,7 @@ describe('User model', () => {
         }
 
         expect(err).to.exist
-        expect(err).to.be.instanceOf(MongoError)
+        expect(err.code).to.equal(11000) // MongoDB duplicate key error code
         expect(err.keyValue['email']).to.exist
       })
     })
@@ -123,7 +123,7 @@ describe('User model', () => {
 
   describe('Find', () => {
     it('should be found successfully', async () => {
-      const userFound = await User.findOne({ _id: ObjectId(user._id) })
+      const userFound = await User.findOne({ _id: new ObjectId(user._id) })
 
       expect(userFound).to.have.property('_id')
       expect(userFound).to.have.property('password')
@@ -143,8 +143,8 @@ describe('User model', () => {
       user.lang = 'en'
       await user.save()
 
-      await User.updateOne({ _id: ObjectId(user._id) }, userData)
-      const updatedUser = await User.findOne({ _id: ObjectId(user._id) })
+      await User.updateOne({ _id: new ObjectId(user._id) }, userData)
+      const updatedUser = await User.findOne({ _id: new ObjectId(user._id) })
 
       expect(updatedUser.name).to.equal(userData.name)
       expect(updatedUser.email).to.equal(userData.email)
@@ -156,8 +156,8 @@ describe('User model', () => {
 
   describe('Delete', () => {
     it('should be deleted successfully', async () => {
-      await User.deleteOne({ _id: ObjectId(user._id) }, userData)
-      const result = await User.find({ _id: ObjectId(user._id) })
+      await User.deleteOne({ _id: new ObjectId(user._id) }, userData)
+      const result = await User.find({ _id: new ObjectId(user._id) })
 
       expect(result).to.be.empty
     })
@@ -172,8 +172,8 @@ describe('User model', () => {
     it('should not re-apply the hash to the password', async () => {
       const rawPass = userData.password
       userData.password = user.password
-      await User.updateOne({ _id: ObjectId(user._id) }, userData)
-      const updatedUser = await User.findOne({ _id: ObjectId(user._id) })
+      await User.updateOne({ _id: new ObjectId(user._id) }, userData)
+      const updatedUser = await User.findOne({ _id: new ObjectId(user._id) })
 
       const passwordComparison = await updatedUser.comparePassword(rawPass)
       expect(passwordComparison).to.be.true

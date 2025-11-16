@@ -1,13 +1,18 @@
 'use strict'
 
 const expect = require('chai').expect
-const { axios, getTestToken } = require('../test-utils')
+const { axios, testUser } = require('../test-utils')
 
 describe('/graphs-stats', () => {
   let authToken
 
   before(async () => {
-    authToken = await getTestToken()
+    // Sign in with existing test user instead of creating new one
+    const res = await axios.post('/signin', {
+      email: testUser.email,
+      password: testUser.password
+    })
+    authToken = res.data.token
   })
 
   describe('GET', () => {

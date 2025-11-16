@@ -4,9 +4,16 @@ module.exports = {
     'es6': true,
     'node': true
   },
+  'parser': '@typescript-eslint/parser',
   'parserOptions': {
-    'ecmaVersion': 2018
+    'ecmaVersion': 2022,
+    'sourceType': 'module'
   },
+  'plugins': ['@typescript-eslint'],
+  'extends': [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended'
+  ],
   rules: {
     'indent': [
       'warn',
@@ -27,7 +34,8 @@ module.exports = {
     'no-multiple-empty-lines': [
       'warn', { 'max': 1 }
     ],
-    'no-unused-vars': [2, { 'vars': 'all', 'args': 'after-used' }],
+    '@typescript-eslint/no-unused-vars': [2, { 'vars': 'all', 'args': 'after-used' }],
+    'no-unused-vars': 'off',
     'eol-last': [
       'warn',
       'always'

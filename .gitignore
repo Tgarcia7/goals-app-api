@@ -19,3 +19,7 @@ node_modules
 
 # Test files
 junit/*
+
+# TypeScript build output
+dist/
+*.tsbuildinfo

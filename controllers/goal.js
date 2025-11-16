@@ -1,6 +1,6 @@
 'use strict'
 const Goal = require('../models/goal')
-const ObjectId = require('mongodb').ObjectID
+const { ObjectId } = require('mongodb')
 
 async function add (req, res) {
   try {
@@ -16,7 +16,7 @@ async function add (req, res) {
       stepsList: req.body.stepsList,
       dateCompleted: req.body.dateCompleted,
       dateCreated: req.body.dateCreated,
-      userId: ObjectId(req.body.userId)
+      userId: new ObjectId(req.body.userId)
     })
 
     const newGoal = await goal.save()
@@ -35,7 +35,7 @@ async function findByUser (req, res) {
     const sort = req.body.sort ? JSON.parse(req.body.sort) : { date: 1, dateCreated: 1 }
     const filter = req.body.query ? JSON.parse(req.body.query) : {}
 
-    filter.userId = ObjectId(req.user.userId)
+    filter.userId = new ObjectId(req.user.userId)
 
     const goals = await Goal.find(filter).skip(page).limit(results).sort(sort)
 
@@ -56,7 +56,7 @@ async function findByUser (req, res) {
 
 async function findById (req, res) {
   try {
-    const filter = { status: 1, _id: ObjectId(req.params.id) }
+    const filter = { status: 1, _id: new ObjectId(req.params.id) }
     const goal = await Goal.find(filter)
 
     if (!Object.keys(goal).length) return res.status(404).send({ message: 'Not found' })
@@ -70,7 +70,7 @@ async function findById (req, res) {
 
 async function update (req, res) {
   try {
-    const filter = { '_id': ObjectId(req.params.id) }
+    const filter = { '_id': new ObjectId(req.params.id) }
     const result = await Goal.updateOne(filter, req.body)
 
     res.status(200).send({ message: 'Update completed', updatedRows: result.nModified })
@@ -82,7 +82,7 @@ async function update (req, res) {
 
 async function deleteOne (req, res) {
   try {
-    const filter = { '_id': ObjectId(req.params.id) }
+    const filter = { '_id': new ObjectId(req.params.id) }
     const result = await Goal.deleteOne(filter)
 
     res.status(200).send({ message: 'Delete completed', deletedRows: result.deletedCount })

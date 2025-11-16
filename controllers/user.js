@@ -2,7 +2,7 @@
 const User = require('../models/user')
 const RefreshToken = require('../models/refreshToken')
 const tokenService = require('../services/token')
-const ObjectId = require('mongodb').ObjectID
+const { ObjectId } = require('mongodb')
 const uuid = require('uuid')
 const { initialStats } = require('./statistic')
 const { initialGraphs } = require('./graph')
@@ -22,7 +22,7 @@ async function findAll (req, res) {
 
 async function findById (req, res) {
   try {
-    const filter = { '_id': ObjectId(req.params.id) }
+    const filter = { '_id': new ObjectId(req.params.id) }
     const excludedFields = { __v: 0, password: 0, signupDate: 0 }
     const user = await User.find(filter, excludedFields)
 
@@ -38,7 +38,7 @@ async function findById (req, res) {
 async function update (req, res) {
   try {
     delete req.body['password']
-    const updateResult = await User.updateOne({ _id: ObjectId(req.params.id) }, req.body)
+    const updateResult = await User.updateOne({ _id: new ObjectId(req.params.id) }, req.body)
 
     res.status(200).send({ message: 'Update completed', updatedRows: updateResult.nModified })
   } catch (error) {
@@ -53,7 +53,7 @@ async function update (req, res) {
 
 async function deleteOne (req, res) {
   try {
-    const filter = { '_id': ObjectId(req.params.id) } 
+    const filter = { '_id': new ObjectId(req.params.id) }
     const deleteResult = await User.deleteOne(filter)
 
     res.status(200).send({ message: 'Delete completed', deletedRows: deleteResult.deletedCount })
@@ -128,8 +128,8 @@ async function changePassword (req, res) {
     
     const found = await user.comparePassword(password)
     if (!found) return res.status(400).send({ message: 'Bad request' })
-    
-    const updateResult = await User.updateOne({ _id: ObjectId(req.params.id) }, { password: newPassword })
+
+    const updateResult = await User.updateOne({ _id: new ObjectId(req.params.id) }, { password: newPassword })
 
     res.status(200).send({ message: 'Update completed', updatedRows: updateResult.nModified })
   } catch (error) {

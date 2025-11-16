@@ -1,6 +1,6 @@
 'use strict'
 const Statistic = require('../models/statistic')
-const ObjectId = require('mongodb').ObjectID
+const { ObjectId } = require('mongodb')
 
 async function add (req, res) {
   try {
@@ -25,7 +25,7 @@ async function add (req, res) {
 
 async function findByUser (req, res) {
   try {
-    const filter = { userId: ObjectId(req.user) }
+    const filter = { userId: new ObjectId(req.user) }
     const statistic = await Statistic.find(filter)
 
     if (!Object.keys(statistic).length) return res.status(404).send({ message: 'Not found' })
@@ -39,7 +39,7 @@ async function findByUser (req, res) {
 
 async function findById (req, res) {
   try {
-    const filter = { status: 1, '_id': ObjectId(req.params.id) }
+    const filter = { status: 1, '_id': new ObjectId(req.params.id) }
     const statistic = await Statistic.find(filter)
 
     if (!Object.keys(statistic).length) return res.status(404).send({ message: 'Not found' })
@@ -53,7 +53,7 @@ async function findById (req, res) {
 
 async function update (req, res) {
   try {
-    const filter = { '_id': ObjectId(req.params.id) }
+    const filter = { '_id': new ObjectId(req.params.id) }
     const result = await Statistic.updateOne(filter, req.body)
 
     res.status(200).send({ message: 'Update completed', updatedRows: result.nModified })
@@ -65,7 +65,7 @@ async function update (req, res) {
 
 async function deleteOne (req, res) {
   try {
-    const filter = { '_id': ObjectId(req.params.id) }
+    const filter = { '_id': new ObjectId(req.params.id) }
     const result = await Statistic.deleteOne(filter)
 
     res.status(200).send({ message: 'Delete completed', deletedRows: result.deletedCount })

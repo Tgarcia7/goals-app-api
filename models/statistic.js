@@ -16,7 +16,11 @@ StatisticSchema.method('transform', function () {
   let obj = this.toObject()
 
   // Convert MongoDB ObjectId to numeric ID using timestamp
-  obj.id = obj._id.getTimestamp().getTime()
+  if (obj._id && typeof obj._id.getTimestamp === 'function') {
+    obj.id = obj._id.getTimestamp().getTime()
+  } else {
+    obj.id = Date.now()
+  }
   delete obj._id
   delete obj.__v
   delete obj.userId

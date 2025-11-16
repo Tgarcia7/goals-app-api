@@ -149,6 +149,7 @@ describe('Statistic model', () => {
 
       expect(transformed).to.have.property('id')
       expect(transformed.id).to.be.a('number')
+      expect(transformed.id).to.be.greaterThan(0)
       expect(transformed).to.not.have.property('_id')
     })
 

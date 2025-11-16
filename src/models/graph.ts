@@ -7,6 +7,7 @@ export interface IGraphDocument extends Document {
   labels: unknown[]
   data: Record<string, unknown>
   userId: Types.ObjectId
+  transform(): Record<string, unknown>
 }
 
 const GraphSchema = new Schema<IGraphDocument>({
@@ -16,6 +17,23 @@ const GraphSchema = new Schema<IGraphDocument>({
   labels: { type: Array, required: true },
   data: { type: Object, required: true },
   userId: { type: Schema.Types.ObjectId, ref: 'User', required: true }
+})
+
+GraphSchema.method('transform', function (this: IGraphDocument) {
+  const obj = this.toObject() as Record<string, unknown>
+
+  // Convert MongoDB ObjectId to numeric ID using timestamp
+  const id = obj._id as Types.ObjectId
+  if (id && typeof id.getTimestamp === 'function') {
+    obj.id = id.getTimestamp().getTime()
+  } else {
+    obj.id = Date.now()
+  }
+  delete obj._id
+  delete obj.__v
+  delete obj.userId
+
+  return obj
 })
 
 const Graph: Model<IGraphDocument> = mongoose.model<IGraphDocument>('Graph', GraphSchema, 'graph')

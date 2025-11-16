@@ -12,9 +12,14 @@ async function findByUser (req, res) {
     ]
 
     const promisesResults = await Promise.all(graphsStatsPromises)
+
+    // Transform documents to match frontend expected schema
+    const transformedGraphs = promisesResults[0].map(graph => graph.transform())
+    const transformedStats = promisesResults[1].map(stat => stat.transform())
+
     const graphsStats = {
-      graphs: promisesResults[0],
-      stats: promisesResults[1]
+      graphs: transformedGraphs,
+      stats: transformedStats
     }
 
     res.status(200).send(graphsStats)

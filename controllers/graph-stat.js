@@ -1,11 +1,11 @@
 'use strict'
 const Graph = require('../models/graph')
 const Statistic = require('../models/statistic')
-const ObjectId = require('mongodb').ObjectID
+const { ObjectId } = require('mongodb')
 
 async function findByUser (req, res) {
   try {
-    const filter = { userId: ObjectId(req.user.userId) }
+    const filter = { userId: new ObjectId(req.user.userId) }
     const graphsStatsPromises = [
       Graph.find(filter),
       Statistic.find(filter)

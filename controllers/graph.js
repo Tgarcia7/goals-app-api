@@ -1,6 +1,6 @@
 'use strict'
 const Graph = require('../models/graph')
-const ObjectId = require('mongodb').ObjectID
+const { ObjectId } = require('mongodb')
 const utils = require('../utils/index')
 
 async function add (req, res) {
@@ -14,7 +14,7 @@ async function add (req, res) {
       byYear: req.body.byYear,
       labels: JSON.parse(req.body.labels),
       data: JSON.parse(req.body.data),
-      userId: ObjectId(req.body.userId)
+      userId: new ObjectId(req.body.userId)
     })
 
     const newGraph = await graph.save()
@@ -28,7 +28,7 @@ async function add (req, res) {
 
 async function findByUser (req, res) {
   try {
-    const filter = { userId: ObjectId(req.user) }
+    const filter = { userId: new ObjectId(req.user) }
     const graph = await Graph.find(filter)
 
     if (!Object.keys(graph).length) return res.status(404).send({ message: 'Not found' })
@@ -42,7 +42,7 @@ async function findByUser (req, res) {
 
 async function findById (req, res) {
   try {
-    const filter = { status: 1, _id: ObjectId(req.params.id) }
+    const filter = { status: 1, _id: new ObjectId(req.params.id) }
     const graph = await Graph.find(filter)
 
     if (!Object.keys(graph).length) return res.status(404).send({ message: 'Not found' })
@@ -57,8 +57,8 @@ async function findById (req, res) {
 async function update (req, res) {
   try {
     if (req.body.data) req.body.data = JSON.parse(req.body.data)
-      
-    const filter = { '_id': ObjectId(req.params.id) }
+
+    const filter = { '_id': new ObjectId(req.params.id) }
     const updateResult = await Graph.updateOne(filter, req.body)
 
     res.status(200).send({ message: 'Update completed', updatedRows: updateResult.nModified })
@@ -70,7 +70,7 @@ async function update (req, res) {
 
 async function deleteOne (req, res) {
   try {
-    const filter = { '_id': ObjectId(req.params.id) }
+    const filter = { '_id': new ObjectId(req.params.id) }
     const deleteResult = await Graph.deleteOne(filter)
 
     res.status(200).send({ message: 'Delete completed', deletedRows: deleteResult.deletedCount })
